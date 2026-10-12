@@ -25,8 +25,22 @@ final class Canonicalizer
 
     public function canonicalize(mixed $value): string
     {
-        $tree = (new Normalizer($this->rules, $this->maxDepth))->normalize($value);
+        return $this->document($this->normalize($value));
+    }
 
+    /**
+     * The normalized tree of a value
+     */
+    public function normalize(mixed $value): mixed
+    {
+        return (new Normalizer($this->rules, $this->maxDepth))->normalize($value);
+    }
+
+    /**
+     * The canonical document of a normalized tree
+     */
+    public function document(mixed $tree): string
+    {
         return Encoder::document($this->namespace, Encoder::encode($tree));
     }
 

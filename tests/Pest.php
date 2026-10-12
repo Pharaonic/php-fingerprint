@@ -41,13 +41,3 @@ function canonical(mixed $value): string
 {
     return (new Canonicalizer())->canonicalize($value);
 }
-
-/**
- * The canonical document a builder hashes (until a public debug API exists)
- */
-function builderCanonical(FingerprintBuilder $builder): string
-{
-    $read = fn () => (new Canonicalizer($this->namespace, $this->rules))->canonicalize($this->value);
-
-    return Closure::bind($read, $builder, FingerprintBuilder::class)();
-}

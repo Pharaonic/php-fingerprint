@@ -8,7 +8,7 @@ it('produces the canonical v1 document', function (string $name) {
     [$input, $configure, $document] = vectors()[$name];
     $builder = Fingerprint::for($input());
 
-    expect(builderCanonical($configure ? $configure($builder) : $builder))->toBe($document);
+    expect(($configure ? $configure($builder) : $builder)->result()->canonical())->toBe($document);
 })->with(vectorNames());
 
 it('hashes the canonical v1 document with SHA-256', function (string $name) {

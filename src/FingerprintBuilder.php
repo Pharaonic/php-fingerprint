@@ -10,11 +10,13 @@ use Pharaonic\Fingerprint\Concerns\HasDigest;
 use Pharaonic\Fingerprint\Concerns\HasValueRules;
 use Pharaonic\Fingerprint\Support\Canonicalizer;
 use Pharaonic\Fingerprint\Support\Digest;
+use Pharaonic\Fingerprint\Support\Encoder;
 use Pharaonic\Fingerprint\Support\ListOrder;
 use Pharaonic\Fingerprint\Support\ListUnique;
 use Pharaonic\Fingerprint\Support\Path;
 use Pharaonic\Fingerprint\Support\Rules;
 use Pharaonic\Fingerprint\Support\Scalars;
+use Pharaonic\Fingerprint\Support\Tree;
 
 /**
  * Immutable fingerprint configuration bound to one value
@@ -288,6 +290,27 @@ final class FingerprintBuilder
     }
 
     /**
+     * The fingerprint with its canonical bytes, normalized value and options, for debugging
+     */
+    public function result(): FingerprintResult
+    {
+        $canonicalizer = $this->canonicalizer();
+        $tree = $canonicalizer->normalize($this->value);
+        $canonical = $canonicalizer->document($tree);
+
+        return new FingerprintResult(
+            $this->digest->hash($canonical),
+            $this->digest->algorithm(),
+            $this->digest->encoding(),
+            $this->digest->isHmac(),
+            $this->namespace,
+            Encoder::VERSION,
+            $canonical,
+            Tree::toPhp($tree),
+        );
+    }
+
+    /**
      * Whether the value matches an expected fingerprint, compared in constant time
      *
      * Hex fingerprints are compared case-insensitively, other encodings exactly.
@@ -315,7 +338,12 @@ final class FingerprintBuilder
 
     private function canonical(): string
     {
-        return (new Canonicalizer($this->namespace, $this->rules))->canonicalize($this->value);
+        return $this->canonicalizer()->canonicalize($this->value);
+    }
+
+    private function canonicalizer(): Canonicalizer
+    {
+        return new Canonicalizer($this->namespace, $this->rules);
     }
 
     /**
