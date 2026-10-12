@@ -13,8 +13,9 @@
   - [Files & Streams](#files-and-streams)
   - [Objects](#objects)
   - [How Rules Combine](#rule-order)
-- Step 4: Payment Gateways & Webhooks
-  - [Ordered Signatures (Paymob)](#signatures)
+- Step 4: Signed Callbacks & Webhooks
+  - [Ordered Signatures](#signatures)
+  - [Signature Examples](#signature-examples)
 - Reference
   - [Debugging](#debugging)
   - [Guarantees & Limitations](#guarantees)

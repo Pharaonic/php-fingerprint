@@ -87,36 +87,4 @@ $key = Fingerprint::for(json_decode($body))
 
 `json_decode()` without `true` returns `stdClass` objects, which are maps just like associative arrays.
 
-### 5. Signing and Verifying Webhooks
-
-Uses: [Ordered Signatures](#signatures).
-
-The sender and the receiver build the same ordered message from the same fields:
-
-- ===Sender
-
-  ```php title="src/Webhooks/Sender.php"
-  use Pharaonic\Fingerprint\Fingerprint;
-
-  $signature = Fingerprint::signature($event)
-      ->fields(['id', 'type', 'amount' => 'data.amount', 'currency' => 'data.currency'])
-      ->keyValue()->separator('&')
-      ->hmac($sharedSecret)
-      ->make();
-
-  $http->post($url, $event, ['X-Signature' => $signature]);
-  ```
-
-- ===Receiver
-
-  ```php title="src/Webhooks/Receiver.php"
-  use Pharaonic\Fingerprint\Fingerprint;
-
-  $event = json_decode($body, true);
-
-  $valid = Fingerprint::signature($event)
-      ->fields(['id', 'type', 'amount' => 'data.amount', 'currency' => 'data.currency'])
-      ->keyValue()->separator('&')
-      ->hmac($sharedSecret)
-      ->verify($headers['X-Signature'] ?? '');
-  ```
+For signatures, see [Signature Examples](#signature-examples): a webhook, Paymob and Kashier.

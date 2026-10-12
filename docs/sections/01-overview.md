@@ -15,7 +15,7 @@ $fingerprint = Fingerprint::make($product);         // store it
 Fingerprint::verify($product, $fingerprint);        // true while nothing changed
 ```
 
-It also verifies **payment gateway and webhook signatures**, such as Paymob callbacks, with `Fingerprint::signature()`. See [Ordered Signatures](#signatures).
+It also verifies **payment gateway and webhook signatures** with `Fingerprint::signature()`. It works with any provider that signs ordered fields; see the [Signature Examples](#signature-examples) for Paymob, Kashier and your own webhooks.
 
 New here? Start with the [Quick Start](#quick-start): three methods cover most uses.
 
@@ -28,7 +28,7 @@ The docs are written to be read in order. Each step only uses what the steps bef
 | 1. Getting Started | [Installation](#installation), [Quick Start](#quick-start) | Make a fingerprint, check whether data changed, ignore a field |
 | 2. The Basics | [How Matching Works](#canonical-rules), [Filtering](#filtering), [Paths & Wildcards](#paths), [Normalization](#normalization), [Lists](#lists) | Decide exactly which values count and when two values are equal |
 | 3. Going Further | [Hashing & HMAC](#hashing), [Files & Streams](#files-and-streams), [Objects](#objects), [How Rules Combine](#rule-order) | Use secrets and other algorithms, hash files, fingerprint your own classes |
-| 4. Payment Gateways & Webhooks | [Ordered Signatures](#signatures) | Verify a Paymob callback or any signed webhook |
+| 4. Signed Callbacks & Webhooks | [Ordered Signatures](#signatures), [Signature Examples](#signature-examples) | Verify a payment gateway callback or a signed webhook, and build the hash a gateway expects |
 
 The **Reference** pages ([Debugging](#debugging), [Classes & Methods](#api-reference), [Examples](#examples), [Troubleshooting](#troubleshooting)…) are for looking things up, not for reading in order.
 

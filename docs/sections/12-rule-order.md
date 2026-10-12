@@ -52,4 +52,4 @@ Paths always refer to the **input** keys. When a filter removes `items.1`, the n
 
 That's the end of step 3, Going Further.
 
-**Next:** step 4, [Ordered Signatures](#signatures): verify payment gateway and webhook signatures.
+**Next:** step 4, [Ordered Signatures](#signatures): verify payment gateway callbacks and webhooks.

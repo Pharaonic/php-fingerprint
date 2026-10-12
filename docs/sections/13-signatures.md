@@ -2,7 +2,7 @@
 
 Payment gateways, banks and webhook providers often sign a callback by joining selected fields in a fixed order, then hashing or HMAC-signing the result. `Fingerprint::signature()` reproduces that message exactly.
 
-This page uses `at()` from [Paths](#paths), the rules from [Normalization](#normalization), and `algorithm()` and `hmac()` from [Hashing & HMAC](#hashing). Signatures are a separate pipeline from fingerprints, though: **nothing is sorted**, and the order of `fields()` is the order of the message.
+This page uses `at()` from [Paths](#paths), the rules from [Normalization](#normalization), and `algorithm()` and `hmac()` from [Hashing & HMAC](#hashing). Nothing here is specific to one provider: you describe the provider's format, and the package builds it. Signatures are a separate pipeline from fingerprints, though: **nothing is sorted**, and the order of `fields()` is the order of the message.
 
 ### Three Steps
 
@@ -37,115 +37,6 @@ $signature->verify($received); // true or false
 ### Selecting Fields
 
 `fields()` takes dot paths, without wildcards, in exactly the protocol's order. Calling it again replaces the list. The payload may be an array, an `ArrayAccess`, a `JsonSerializable`, or an object with public properties, such as the `stdClass` that `json_decode()` returns. Private and protected properties are never read.
-
-### Example: Verifying a Paymob Callback
-
-When a payment finishes, Paymob sends your server a **transaction processed callback**: a `POST` request with a JSON body and the signature in the URL (`?hmac=...`). Anyone can call your callback URL, so check that signature before you trust the request.
-
-**Step 1: what Paymob sends.** The body looks like this (shortened):
-
-```json title="POST /paymob/callback?hmac=3f9a...e1"
-{
-    "type": "TRANSACTION",
-    "obj": {
-        "id": 192036465,
-        "amount_cents": 100000,
-        "currency": "EGP",
-        "success": true,
-        "pending": false,
-        "created_at": "2024-06-13T11:33:44.592345",
-        "order": { "id": 217503754 },
-        "source_data": { "type": "card", "pan": "2346", "sub_type": "MasterCard" }
-    }
-}
-```
-
-**Step 2: how Paymob signs it.** Paymob takes 20 fields of `obj`, always in the same (alphabetical) order, writes each value as text (`true`/`false` for booleans), joins them with nothing in between, and signs the result with HMAC-SHA512 and your HMAC secret from the Paymob dashboard.
-
-**Step 3: do the same and compare.** List the fields in Paymob's order, and let the package build the text and compare the signatures:
-
-- ===Plain PHP
-
-  ```php title="public/paymob-callback.php"
-  use Pharaonic\Fingerprint\Fingerprint;
-
-  $transaction = json_decode(file_get_contents('php://input'))->obj;
-
-  $valid = Fingerprint::signature($transaction)
-      ->fields([
-          'amount_cents', 'created_at', 'currency', 'error_occured', 'has_parent_transaction', 'id',
-          'integration_id', 'is_3d_secure', 'is_auth', 'is_capture', 'is_refunded', 'is_standalone_payment',
-          'is_voided', 'order.id', 'owner', 'pending', 'source_data.pan', 'source_data.sub_type',
-          'source_data.type', 'success',
-      ])
-      ->algorithm('sha512')
-      ->hmac(getenv('PAYMOB_HMAC_SECRET'))
-      ->verify($_GET['hmac'] ?? '');
-
-  if (! $valid) {
-      http_response_code(403);
-      exit;
-  }
-
-  // The callback really comes from Paymob: update the order here.
-  ```
-
-- ===Laravel
-
-  ```php title="app/Http/Controllers/PaymobCallbackController.php"
-  namespace App\Http\Controllers;
-
-  use Illuminate\Http\Request;
-  use Pharaonic\Fingerprint\Fingerprint;
-
-  class PaymobCallbackController extends Controller
-  {
-      private const FIELDS = [
-          'amount_cents', 'created_at', 'currency', 'error_occured', 'has_parent_transaction', 'id',
-          'integration_id', 'is_3d_secure', 'is_auth', 'is_capture', 'is_refunded', 'is_standalone_payment',
-          'is_voided', 'order.id', 'owner', 'pending', 'source_data.pan', 'source_data.sub_type',
-          'source_data.type', 'success',
-      ];
-
-      public function __invoke(Request $request)
-      {
-          $transaction = json_decode($request->getContent())->obj;
-
-          $valid = Fingerprint::signature($transaction)
-              ->fields(self::FIELDS)
-              ->algorithm('sha512')
-              ->hmac(config('services.paymob.hmac'))
-              ->verify((string) $request->query('hmac'));
-
-          abort_unless($valid, 403);
-
-          // The callback really comes from Paymob: update the order here.
-
-          return response()->noContent();
-      }
-  }
-  ```
-
-**Step 4: trust the data, not just the signature.** A valid signature proves Paymob sent the callback. Still check that `success` is `true`, and that `amount_cents` and `currency` match the order in your database before marking it paid.
-
-### When the Signature Doesn't Match
-
-Print the text that is signed and compare it with what Paymob describes:
-
-```php
-Fingerprint::signature($transaction)->fields($fields)->message();
-// "1000002024-06-13T11:33:44.592345EGPfalsefalse192036465..."
-```
-
-The usual causes are the wrong HMAC secret, a field missing from the list or in the wrong place, or passing the whole body instead of its `obj` part.
-
-:::info Other Paymob callbacks
-Paymob also redirects the customer back to your site with the transaction in the query string. That callback lists its fields differently, and PHP turns dots in query names into underscores (`source_data.pan` arrives as `source_data_pan`), so check Paymob's documentation for its field list. The package has no Paymob-specific code: the same steps work for any gateway that signs ordered fields.
-:::
-
-### Other Providers
-
-Paymob joins values with nothing in between. Other providers join `key=value` pairs, use a separator, or write amounts with decimals. The rest of this page covers those options.
 
 ### Shaping the Message
 
@@ -205,4 +96,14 @@ By default, a missing field throws a `MissingFieldException` and a null field th
 
 A path through a `null` or a scalar counts as missing. Exception messages name the field path, never its value.
 
-**Next:** the Reference pages. Start with [Debugging](#debugging) when a result surprises you, or browse the [Examples](#examples).
+### When the Signature Doesn't Match
+
+Print the message and compare it with the provider's documentation:
+
+```php
+Fingerprint::signature($payload)->fields($fields)->message();
+```
+
+Check the field order, the separators, how booleans and amounts are written (`true` or `1`, `1050` or `10.50`), and whether missing fields should be empty or skipped. Then check the secret and the algorithm.
+
+**Next:** [Signature Examples](#signature-examples): complete examples for a webhook, Paymob and Kashier.
