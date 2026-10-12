@@ -19,7 +19,11 @@ These rules are one kind each:
 - `unordered()`, `sortBy()` and `sortUsing()`;
 - `unique()` and `uniqueBy()`.
 
-A global rule also applies to the root value itself.
+A global rule also applies to the root value itself:
+
+```php
+Fingerprint::for('  Ahmed ')->trim()->result()->normalized(); // "Ahmed"
+```
 
 ### Rules Run in a Fixed Order
 
@@ -37,7 +41,7 @@ Rules always run in the same order, whatever order you declare them in, so `->lo
 
 `ignoreNulls()`, `ignoreEmptyStrings()` and `ignoreEmptyArrays()` check each value after its rules apply.
 
-Because a list's rules run after its children (steps 8 and 9), you can clean each element and then order the list:
+Because a list's rules run after its children (8 and 9 above), you can clean each element and then order the list:
 
 ```php
 Fingerprint::for($contact)
@@ -48,8 +52,16 @@ Fingerprint::for($contact)
 
 ### Paths Refer to the Input
 
-Paths always refer to the **input** keys. When a filter removes `items.1`, the next element is still `items.2` for every other rule, even though the list is re-indexed in the result.
+Paths always refer to the **input** keys. When a filter removes an element, the next one keeps its input index for every other rule, even though the list is re-indexed in the result:
 
-That's the end of step 3, Going Further.
+```php
+Fingerprint::for(['items' => ['a', ' b ', ' c ']])
+    ->ignore('items.0')
+    ->at('items.1')->trim()     // still ' b ', the second input element
+    ->result()->normalized();
+// ['items' => ['b', ' c ']]
+```
 
-**Next:** step 4, [Ordered Signatures](#signatures): verify payment gateway callbacks and webhooks.
+That's the end of Going Further.
+
+**Next:** [Ordered Signatures](#signatures): verify payment gateway callbacks and webhooks.

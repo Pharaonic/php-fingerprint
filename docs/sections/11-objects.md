@@ -14,6 +14,25 @@ Objects are converted into plain data, in this order:
 
 Private and protected properties are never read. What a conversion returns is converted again, so a `JsonSerializable` may return another one.
 
+A value object that already implements `JsonSerializable` needs nothing more:
+
+```php
+final class Money implements JsonSerializable
+{
+    public function __construct(private int $amount, private string $currency) {}
+
+    public function jsonSerialize(): array
+    {
+        return ['amount' => $this->amount, 'currency' => $this->currency];
+    }
+}
+
+Fingerprint::for(['total' => new Money(1050, 'EGP')])->result()->normalized();
+// ['total' => ['amount' => 1050, 'currency' => 'EGP']]
+```
+
+Use a custom normalizer for classes you can't change, or when you want a different shape than `jsonSerialize()`.
+
 ### Custom Normalizers
 
 `normalize()` converts objects of a class, or implementing an interface, with your callback. It applies everywhere, whatever `at()` scope is active:

@@ -21,14 +21,14 @@ New here? Start with the [Quick Start](#quick-start): three methods cover most u
 
 ### Learning Path
 
-The docs are written to be read in order. Each step only uses what the steps before it explained, and you can stop at any step once it covers what you need:
+The docs are written to be read in order. Each part only uses what the parts before it explained, and you can stop as soon as you have what you need:
 
-| Step | Pages | You'll be able to |
+| Part | Pages | You'll be able to |
 | --- | --- | --- |
-| 1. Getting Started | [Installation](#installation), [Quick Start](#quick-start) | Make a fingerprint, check whether data changed, ignore a field |
-| 2. The Basics | [How Matching Works](#canonical-rules), [Filtering](#filtering), [Paths & Wildcards](#paths), [Normalization](#normalization), [Lists](#lists) | Decide exactly which values count and when two values are equal |
-| 3. Going Further | [Hashing & HMAC](#hashing), [Files & Streams](#files-and-streams), [Objects](#objects), [How Rules Combine](#rule-order) | Use secrets and other algorithms, hash files, fingerprint your own classes |
-| 4. Signed Callbacks & Webhooks | [Ordered Signatures](#signatures), [Signature Examples](#signature-examples) | Verify a payment gateway callback or a signed webhook, and build the hash a gateway expects |
+| Getting Started | [Installation](#installation), [Quick Start](#quick-start) | Make a fingerprint, check whether data changed, ignore a field |
+| The Basics | [How Matching Works](#canonical-rules), [Filtering](#filtering), [Paths & Wildcards](#paths), [Normalization](#normalization), [Lists](#lists) | Decide exactly which values count and when two values are equal |
+| Going Further | [Hashing & HMAC](#hashing), [Files & Streams](#files-and-streams), [Objects](#objects), [How Rules Combine](#rule-order) | Use secrets and other algorithms, hash files, fingerprint your own classes |
+| Signed Callbacks & Webhooks | [Ordered Signatures](#signatures), [Signature Examples](#signature-examples) | Verify a payment gateway callback or a signed webhook, and build the hash a gateway expects |
 
 The **Reference** pages ([Debugging](#debugging), [Classes & Methods](#api-reference), [Examples](#examples), [Troubleshooting](#troubleshooting)…) are for looking things up, not for reading in order.
 

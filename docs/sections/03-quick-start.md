@@ -69,11 +69,11 @@ foreach ($rows as $row) {
 }
 ```
 
-**Verify a payment gateway callback or a webhook:** this is step 4 of the [learning path](#overview). If you're in a hurry, [Signature Examples](#signature-examples) has complete examples you can copy, including Paymob and Kashier.
+**Verify a payment gateway callback or a webhook:** the [learning path](#overview) gets there after the basics. If you're in a hurry, [Signature Examples](#signature-examples) has complete examples you can copy, including Paymob and Kashier.
 
 ### Good to Know
 
 - `7` and `'7'` are different, and so are `[1, 2]` and `[2, 1]`. The next page explains why.
 - Builders never change: each method returns a new one, so you can keep a configured builder and reuse it with `->for($otherData)`.
 
-**Next:** [How Matching Works](#canonical-rules) starts step 2, The Basics: when two values share a fingerprint, and how to see what gets hashed.
+**Next:** [How Matching Works](#canonical-rules) starts The Basics: when two values share a fingerprint, and how to see what gets hashed.

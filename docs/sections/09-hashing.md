@@ -38,7 +38,10 @@ Fingerprint::for($data)->algorithm('xxh128');
 `namespace()` keeps fingerprints of the same data used for different purposes apart. An `"invoice"` fingerprint never matches an `"order"` fingerprint of the same data, nor one without a namespace:
 
 ```php
-Fingerprint::for($data)->namespace('invoice')->make();
+$invoice = Fingerprint::for(['id' => 7])->namespace('invoice')->make();
+$order = Fingerprint::for(['id' => 7])->namespace('order')->make();
+
+$invoice === $order; // false
 ```
 
 A namespace is not a secret: anyone who knows it can compute the same fingerprint. That's what HMAC is for.

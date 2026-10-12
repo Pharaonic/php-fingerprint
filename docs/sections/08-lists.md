@@ -42,6 +42,18 @@ $builder->at('items')->sortBy(['category' => 'asc', 'priority' => 'desc']);
 $builder->at('items')->sortBy('meta.position');
 ```
 
+Two orders with the same items, listed in a different order, then match:
+
+```php
+$a = ['items' => [['id' => 2, 'qty' => 1], ['id' => 1, 'qty' => 3]]];
+$b = ['items' => [['id' => 1, 'qty' => 3], ['id' => 2, 'qty' => 1]]];
+
+Fingerprint::make($a) === Fingerprint::make($b); // false
+
+$byId = Fingerprint::for(null)->at('items')->sortBy('id');
+$byId->for($a)->make() === $byId->for($b)->make(); // true
+```
+
 Ties keep their input order. Values of different types are ordered by type: a missing field, then `null`, booleans, numbers, strings, then arrays.
 
 ### uniqueBy()
@@ -69,6 +81,6 @@ $builder->at('items')->sortUsing(fn (array $a, array $b) => $a['rank'] <=> $b['r
 
 `unordered()`, `sortBy()` and `sortUsing()` replace each other for a path, and so do `unique()` and `uniqueBy()`. The last one declared wins.
 
-That's the end of step 2, The Basics. You can now control which values count and when two values are equal.
+That's the end of The Basics. You can now control which values count and when two values are equal.
 
-**Next:** step 3 starts with [Hashing & HMAC](#hashing): secrets, other algorithms and output formats.
+**Next:** Going Further starts with [Hashing & HMAC](#hashing): secrets, other algorithms and output formats.

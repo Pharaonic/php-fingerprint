@@ -38,7 +38,7 @@ When you control both sides, the sender and the receiver build the same ordered 
 
 When a payment finishes, Paymob sends your server a **transaction processed callback**: a `POST` request with a JSON body and the signature in the URL (`?hmac=...`). Anyone can call your callback URL, so check that signature before you trust the request.
 
-**Step 1: what Paymob sends.** The body looks like this (shortened):
+**What Paymob sends.** The body looks like this (shortened):
 
 ```json title="POST /paymob/callback?hmac=3f9a...e1"
 {
@@ -56,9 +56,9 @@ When a payment finishes, Paymob sends your server a **transaction processed call
 }
 ```
 
-**Step 2: how Paymob signs it.** Paymob takes 20 fields of `obj`, always in the same (alphabetical) order, writes each value as text (`true`/`false` for booleans), joins them with nothing in between, and signs the result with HMAC-SHA512 and your HMAC secret from the Paymob dashboard.
+**How Paymob signs it.** Paymob takes 20 fields of `obj`, always in the same (alphabetical) order, writes each value as text (`true`/`false` for booleans), joins them with nothing in between, and signs the result with HMAC-SHA512 and your HMAC secret from the Paymob dashboard.
 
-**Step 3: do the same and compare.** List the fields in Paymob's order, and let the package build the text and compare the signatures:
+**Do the same and compare.** List the fields in Paymob's order, and let the package build the text and compare the signatures:
 
 - ===Plain PHP
 
@@ -122,7 +122,7 @@ When a payment finishes, Paymob sends your server a **transaction processed call
   }
   ```
 
-**Step 4: trust the data, not just the signature.** A valid signature proves Paymob sent the callback. Still check that `success` is `true`, and that `amount_cents` and `currency` match the order in your database before marking it paid.
+**Trust the data, not just the signature.** A valid signature proves Paymob sent the callback. Still check that `success` is `true`, and that `amount_cents` and `currency` match the order in your database before marking it paid.
 
 **When it doesn't match**, print the text that is signed and compare it with what Paymob describes:
 

@@ -4,9 +4,9 @@ Payment gateways, banks and webhook providers often sign a callback by joining s
 
 This page uses `at()` from [Paths](#paths), the rules from [Normalization](#normalization), and `algorithm()` and `hmac()` from [Hashing & HMAC](#hashing). Nothing here is specific to one provider: you describe the provider's format, and the package builds it. Signatures are a separate pipeline from fingerprints, though: **nothing is sorted**, and the order of `fields()` is the order of the message.
 
-### Three Steps
+### Build, Sign, Verify
 
-**1. Build the message.** List the fields in the provider's order. `message()` shows the exact string that will be signed:
+**Build the message.** List the fields in the provider's order. `message()` shows the exact string that will be signed:
 
 ```php
 use Pharaonic\Fingerprint\Fingerprint;
@@ -17,7 +17,7 @@ Fingerprint::signature(['amount_cents' => 1050, 'currency' => 'EGP', 'success' =
 // "1050EGPtrue"
 ```
 
-**2. Sign it.** Add the provider's algorithm and your secret, then call `make()`:
+**Sign it.** Add the provider's algorithm and your secret, then call `make()`:
 
 ```php
 $signature = Fingerprint::signature($payload)
@@ -28,7 +28,7 @@ $signature = Fingerprint::signature($payload)
 $signature->make(); // the signature
 ```
 
-**3. Verify what you received.** `verify()` compares in constant time:
+**Verify what you received.** `verify()` compares in constant time:
 
 ```php
 $signature->verify($received); // true or false
@@ -89,8 +89,21 @@ By default, a missing field throws a `MissingFieldException` and a null field th
 | `'skip'` | nothing: the field is left out, with its separator |
 | a closure | the string it returns for the field path, or nothing when it returns `null` |
 
+The difference shows in the message. Here the field `b` is missing:
+
 ```php
-->onMissing('empty')
+$signature = Fingerprint::signature(['a' => '1', 'c' => '3'])
+    ->fields(['a', 'b', 'c'])
+    ->separator('|');
+
+$signature->onMissing('empty')->message(); // "1||3"
+$signature->onMissing('skip')->message();  // "1|3"
+$signature->onMissing('null')->message();  // "1|null|3"
+```
+
+A closure decides per field:
+
+```php
 ->onNull(fn (string $field) => $field === 'note' ? '' : null)
 ```
 

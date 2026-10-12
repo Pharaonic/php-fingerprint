@@ -1,19 +1,19 @@
-- Step 1: Getting Started
+- Getting Started
   - [Overview](#overview)
   - [Installation](#installation)
   - [Quick Start](#quick-start)
-- Step 2: The Basics
+- The Basics
   - [How Matching Works](#canonical-rules)
   - [Filtering](#filtering)
   - [Paths & Wildcards](#paths)
   - [Normalization](#normalization)
   - [Lists](#lists)
-- Step 3: Going Further
+- Going Further
   - [Hashing & HMAC](#hashing)
   - [Files & Streams](#files-and-streams)
   - [Objects](#objects)
   - [How Rules Combine](#rule-order)
-- Step 4: Signed Callbacks & Webhooks
+- Signed Callbacks & Webhooks
   - [Ordered Signatures](#signatures)
   - [Signature Examples](#signature-examples)
 - Reference
