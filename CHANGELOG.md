@@ -20,4 +20,5 @@ All notable changes to this project are documented in this file.
 - `namespace()` keeps fingerprints of identical data used for different purposes apart.
 - `Fingerprint::verify()` and `FingerprintBuilder::verify()` compare in constant time, hex case-insensitively.
 - The HMAC secret never appears in `var_dump()`, `print_r()` or exception messages, and builders refuse to be serialized.
+- Ordered signatures: `Fingerprint::signature($payload)->fields([...])` joins the selected fields in exactly the declared order and hashes or signs them, for protocols such as payment gateway callbacks. `valuesOnly()` or `keyValue()`, `separator()` and `keyValueSeparator()` shape the message, `onMissing()` and `onNull()` decide what missing and null fields become (both throw by default), and `at()` applies string rules, `precision()` and `transform()` per field. `message()` shows the exact string that is signed, and `verify()` checks a received signature in constant time.
 - `FingerprintBuilder::for()` reuses a configuration for another value. Invalid paths, path lists and callback results throw a `ConfigurationException`.

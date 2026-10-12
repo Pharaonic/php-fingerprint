@@ -9,6 +9,9 @@ namespace Pharaonic\Fingerprint;
  *
  * Associative arrays are compared regardless of key order, lists keep their order,
  * and types are preserved: 1, '1', 1.0 and true all give different fingerprints.
+ *
+ * Fingerprints answer "are these the same data?"; signatures answer "does this payload carry
+ * this protocol-defined, ordered signature?". The two never share a format.
  */
 final class Fingerprint
 {
@@ -34,5 +37,17 @@ final class Fingerprint
     public static function for(mixed $value): FingerprintBuilder
     {
         return new FingerprintBuilder($value);
+    }
+
+    /**
+     * Start an ordered signature of payload fields, for protocols where field order matters
+     *
+     * Signatures never sort anything: declare the fields with fields(), in the protocol's order.
+     *
+     * @param array<mixed>|object $payload
+     */
+    public static function signature(array|object $payload): SignatureBuilder
+    {
+        return new SignatureBuilder($payload);
     }
 }
