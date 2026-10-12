@@ -26,6 +26,10 @@ The latest release requires {package.requiresText}.
 
 A fingerprint answers "is this the same data?": key order never matters and you choose what to ignore. A signature answers "does this payload carry the signature a protocol defines?": fields are joined in exactly the declared order, as payment gateways and webhooks require. The two never share a format.
 
+## How do I verify a Paymob callback?
+
+List Paymob's fields in their documented order with `Fingerprint::signature($transaction)->fields([...])`, choose `algorithm('sha512')` and `hmac($secret)`, then call `verify()` with the `hmac` Paymob sent. The documentation has a complete step-by-step example for plain PHP and Laravel.
+
 ## Will fingerprints match across servers and PHP versions?
 
 Yes. The canonical form never depends on the locale, ini settings or the PHP version, and hand-written golden vectors check it on every supported PHP line. Only rules that rely on Unicode tables or timezone databases can differ between builds, and the documentation lists them.

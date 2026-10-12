@@ -1,5 +1,7 @@
 ## Lists
 
+Read this when the order of a list, such as tags, shouldn't change the fingerprint, or when duplicates should be ignored.
+
 Lists keep their order by default. List rules change that for every list, or only at a path after [`at()`](#paths). They have no effect on maps and scalars, so a global `unordered()` safely reaches every list.
 
 ### unordered()

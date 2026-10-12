@@ -1,5 +1,7 @@
 ## Paths & Wildcards
 
+Read this when you need to target nested values, like every item's price, or apply a rule to one field only.
+
 `ignore()`, `only()`, `at()`, `sortBy()`, `uniqueBy()` and the signature `fields()` take dot paths. The syntax is the same as in [pharaonic/php-dot-array](https://github.com/Pharaonic/php-dot-array).
 
 ### Syntax

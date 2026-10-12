@@ -1,24 +1,23 @@
 - Getting Started
   - [Overview](#overview)
   - [Installation](#installation)
-- Fingerprints
-  - [Basic Usage](#basic-usage)
+  - [Quick Start](#quick-start)
+- Payment Gateways & Webhooks
+  - [Ordered Signatures (Paymob)](#signatures)
+- Advanced
   - [Canonical Rules](#canonical-rules)
   - [Paths & Wildcards](#paths)
   - [Filtering](#filtering)
   - [Normalization](#normalization)
   - [Lists](#lists)
   - [Objects](#objects)
-- Hashing & Signing
   - [Hashing & HMAC](#hashing)
-  - [Ordered Signatures](#signatures)
   - [Files & Streams](#files-and-streams)
-- API Reference
+- Reference
   - [Debugging](#debugging)
   - [Guarantees & Limitations](#guarantees)
   - [Classes & Methods](#api-reference)
-- Examples
-  - [Use Cases](#examples)
+  - [Examples](#examples)
   - [Troubleshooting](#troubleshooting)
 - Community
   - [Contributors](#contributors)

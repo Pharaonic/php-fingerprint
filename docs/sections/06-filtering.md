@@ -1,5 +1,7 @@
 ## Filtering
 
+`ignore()` is covered in the [Quick Start](#quick-start). Read on for selecting fields, ignoring by condition, and dropping empty values.
+
 Filters decide which values take part in the fingerprint. They are global: `at()` does not scope them.
 
 ### ignore()

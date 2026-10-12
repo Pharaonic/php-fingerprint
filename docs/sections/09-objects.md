@@ -1,5 +1,7 @@
 ## Objects
 
+Read this when your data holds objects other than plain arrays: models, value objects, collections.
+
 Objects are converted into plain data, in this order:
 
 1. closures and generators are rejected;

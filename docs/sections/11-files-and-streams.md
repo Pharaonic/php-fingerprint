@@ -1,5 +1,7 @@
 ## Files & Streams
 
+Read this to fingerprint a file or a stream's raw bytes, such as an upload or a download.
+
 `Fingerprint::file()` and `Fingerprint::stream()` hash raw bytes exactly as they are, without canonicalization. They read in chunks, so a large file never loads into memory. They return a `DigestBuilder` with the same `algorithm()`, `hmac()`, encoding and `verify()` options:
 
 ```php

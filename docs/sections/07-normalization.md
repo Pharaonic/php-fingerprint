@@ -1,5 +1,7 @@
 ## Normalization
 
+Read this when equal-looking data should match: extra spaces, upper and lower case, rounding, numbers stored as strings, or dates in different timezones.
+
 Value rules turn equivalent values into the same value before hashing. Each applies to every value of its type, or only at a path after [`at()`](#paths).
 
 ### Strings

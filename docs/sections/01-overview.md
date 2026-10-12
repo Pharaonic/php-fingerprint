@@ -6,12 +6,18 @@
 
 # Fingerprint
 
-Deterministic fingerprints and ordered signatures for PHP data. Fingerprint answers two different questions, and keeps them apart:
+Fingerprint turns PHP data into a short, stable string. If the data is the same, the string is the same, even when array keys are in a different order. Use it to detect changes, find duplicates, or build cache and idempotency keys:
 
-- **Fingerprints** (`Fingerprint::make()`, `Fingerprint::for()`): *are these two PHP values the same data?* Associative key order never matters, list order and types do, and you declare what else to ignore or normalize. Use them for change detection, de-duplication, cache and idempotency keys, and sync.
-- **Signatures** (`Fingerprint::signature()`): *does this payload carry this protocol's signature?* The fields are joined in exactly the order you declare, then hashed or signed with HMAC, as payment gateways and webhooks expect. Nothing is sorted.
+```php
+use Pharaonic\Fingerprint\Fingerprint;
 
-The same data with the same configuration gives the same fingerprint on every machine, locale, `precision` ini setting and supported PHP version.
+$fingerprint = Fingerprint::make($product);         // store it
+Fingerprint::verify($product, $fingerprint);        // true while nothing changed
+```
+
+It also verifies **payment gateway and webhook signatures**, such as Paymob callbacks, with `Fingerprint::signature()`. See [Ordered Signatures](#signatures).
+
+New here? Start with the [Quick Start](#quick-start): three methods cover most uses. The **Advanced** pages are there when you need more control.
 
 :::features
 ### Key Order Never Matters {icon="switch"}
@@ -34,5 +40,5 @@ Fingerprint large files and streams in chunks, without loading them into memory.
 :::
 
 :::info Quick Tip
-Not sure why two values give different fingerprints? Compare `Fingerprint::for($a)->result()->canonical()` with the same call for `$b`: it shows the exact bytes that were hashed.
+Some fields change all the time, like `updated_at`. Leave them out with `Fingerprint::for($data)->ignore('updated_at')->make()`.
 :::

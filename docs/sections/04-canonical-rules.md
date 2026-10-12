@@ -1,5 +1,7 @@
 ## Canonical Rules
 
+Read this when two values you expect to match get different fingerprints, or the other way round.
+
 Before hashing, every value is written in a canonical form (format v1). These rules decide when two values share a fingerprint.
 
 ### Maps and Lists

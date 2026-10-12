@@ -1,5 +1,7 @@
 ## Hashing & HMAC
 
+The default (SHA-256, hex) fits most uses. Read this when the fingerprint must be secret, shorter, or in another format.
+
 Every builder (`FingerprintBuilder`, `SignatureBuilder` and `DigestBuilder`) shares the same hashing options.
 
 ### Algorithms
