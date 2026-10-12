@@ -60,9 +60,25 @@ it('applies Unicode normalization forms', function () {
 })->skip(! class_exists(Normalizer::class), 'Needs ext-intl or symfony/polyfill-intl-normalizer.');
 
 it('needs a Normalizer implementation for unicode()', function () {
-    Fingerprint::for('x')->unicode('NFC');
-})->throws(MissingExtensionException::class, 'unicode() needs ext-intl or symfony/polyfill-intl-normalizer.')
-    ->skip(class_exists(Normalizer::class), 'The dev tools install symfony/polyfill-intl-normalizer, so Normalizer always exists here.');
+    // The dev tools install symfony/polyfill-intl-normalizer, so this runs in a PHP process that only autoloads src/.
+    $script = sprintf(<<<'PHP'
+        spl_autoload_register(function ($class) {
+            $prefix = 'Pharaonic\\Fingerprint\\';
+            if (strncmp($class, $prefix, strlen($prefix)) === 0) {
+                require %s . '/' . str_replace('\\', '/', substr($class, strlen($prefix))) . '.php';
+            }
+        });
+        try {
+            Pharaonic\Fingerprint\Fingerprint::for('x')->unicode('NFC');
+        } catch (Throwable $exception) {
+            echo get_class($exception), ': ', $exception->getMessage();
+        }
+        PHP, var_export(dirname(__DIR__, 2) . '/src', true));
+
+    $output = shell_exec(escapeshellarg(PHP_BINARY) . ' -r ' . escapeshellarg($script) . ' 2>&1');
+
+    expect($output)->toBe(MissingExtensionException::class . ': unicode() needs ext-intl or symfony/polyfill-intl-normalizer.');
+})->skip(extension_loaded('intl'), 'This PHP has ext-intl; CI runs this test on a job without it.');
 
 it('rejects unknown Unicode forms', function () {
     Fingerprint::for('x')->unicode('nfc');

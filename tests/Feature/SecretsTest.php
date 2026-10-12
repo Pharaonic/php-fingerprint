@@ -53,7 +53,7 @@ it('keeps the secret out of exception traces, even with arguments recorded', fun
             fn () => Fingerprint::for(1)->algorithm('crc32b')->hmac($secret)->make(),
             fn () => Fingerprint::file(__FILE__)->algorithm('joaat')->hmac($secret)->verify('x'),
             fn () => Fingerprint::for(1)->hmac($secret)->algorithm('fnv1a64'),
-            fn () => Fingerprint::for(NAN)->hmac($secret)->make(),
+            fn () => Fingerprint::for(new DateTimeZone('UTC'))->hmac($secret)->make(),
             fn () => Fingerprint::signature([])->fields(['missing'])->hmac($secret)->make(),
             fn () => Fingerprint::file('/missing/file')->hmac($secret)->make(),
         ] as $failing) {
