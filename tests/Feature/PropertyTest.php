@@ -64,13 +64,17 @@ it('never collides when strings are split differently', function (int $seed) {
     }
 })->with('seeds');
 
-it('gives identical documents identical digests', function (int $seed) {
+it('gives identical documents identical digests with every algorithm', function (int $seed) {
     mt_srand($seed);
 
-    for ($i = 0; $i < 50; $i++) {
+    for ($i = 0; $i < 20; $i++) {
         $value = Gen::value();
+        $copy = Gen::shuffleMaps($value);
+        $document = canonical($value);
 
-        expect(Fingerprint::make($value))->toBe(hash('sha256', canonical($value)));
+        foreach (hash_algos() as $algorithm) {
+            expect(Fingerprint::for($copy)->algorithm($algorithm)->make())->toBe(hash($algorithm, $document));
+        }
     }
 })->with('seeds');
 

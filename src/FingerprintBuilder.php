@@ -37,6 +37,8 @@ final class FingerprintBuilder
 
     private ?string $namespace = null;
 
+    private int $maxDepth = Canonicalizer::DEFAULT_MAX_DEPTH;
+
     /**
      * @internal Use Fingerprint::for().
      */
@@ -267,6 +269,24 @@ final class FingerprintBuilder
     }
 
     /**
+     * How deeply arrays and objects may nest (512 by default, like json_decode())
+     *
+     * Deeper values throw a MaximumDepthExceededException instead of exhausting the stack;
+     * self-referencing arrays hit this limit too.
+     */
+    public function maxDepth(int $depth): self
+    {
+        if ($depth < 1) {
+            throw new ConfigurationException(sprintf('maxDepth() must be at least 1, %d given.', $depth));
+        }
+
+        $builder = clone $this;
+        $builder->maxDepth = $depth;
+
+        return $builder;
+    }
+
+    /**
      * Separate fingerprints of identical data used for different purposes
      *
      * "invoice" and "order" fingerprints of the same data never match, and neither matches a
@@ -343,7 +363,7 @@ final class FingerprintBuilder
 
     private function canonicalizer(): Canonicalizer
     {
-        return new Canonicalizer($this->namespace, $this->rules);
+        return new Canonicalizer($this->namespace, $this->rules, $this->maxDepth);
     }
 
     /**
