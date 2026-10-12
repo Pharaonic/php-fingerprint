@@ -30,6 +30,13 @@ Enum support starts on `8.1.x`. `8.0.x` has none in any form.
 - `lower()`, `upper()` and `unicode()` depend on the Unicode tables of mbstring and ICU, which can differ between PHP builds for newly assigned code points. Golden vectors only use characters that are stable across them.
 - CI runs the tests on Linux and Windows, with lowest and highest dependencies, and once without `ext-intl`.
 
+## Security notes
+
+- PHP 8.0 has no `#[SensitiveParameter]`, so no exception may be thrown while a frame holds the HMAC secret as an argument: `hmac()` only rejects an empty secret, and the HMAC-algorithm check runs when hashing. `SecretsTest` checks the package's frames with `zend.exception_ignore_args` off. Lines from 8.2 can add `#[SensitiveParameter]` on top.
+- The secret is hidden from `var_dump()`/`print_r()` through `__debugInfo()` and builders refuse `serialize()`, but `var_export()`, `(array)` casts and Reflection can still read private properties; that cannot be prevented in PHP.
+- `Fingerprint::file()` reads any path PHP's stat functions accept, stream wrappers included: paths must come from trusted code. PHP 8.0 no longer unserializes Phar metadata on file access.
+- Callbacks (`transform()`, `normalize()`, `sortUsing()`, `ignoreWhen()`, signature strategies) and user objects (`JsonSerializable`, `Traversable`, `ArrayAccess`) run application code and are trusted.
+
 ## Branch notes
 
 Tooling follows the line's PHP: Pest 1 on `8.0.x` and `8.1.x`, Pest 3 on `8.2.x`, Pest 4 from `8.3.x`; Pint uses the `psr12` preset on `8.0.x` and `per` on the other lines.

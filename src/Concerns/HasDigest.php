@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Pharaonic\Fingerprint\Concerns;
 
+use Pharaonic\Fingerprint\Exceptions\ConfigurationException;
 use Pharaonic\Fingerprint\Support\Digest;
 
 /**
@@ -37,6 +38,12 @@ trait HasDigest
      */
     public function hmac(string $secret): self
     {
+        if ($secret === '') {
+            throw new ConfigurationException('An HMAC secret cannot be empty.');
+        }
+
+        // Never throw from here with a real secret: on PHP 8.0 this frame's arguments would show it
+        // in the exception trace. An algorithm that cannot do HMAC is reported when hashing instead.
         $builder = clone $this;
         $builder->digest = $this->digest->withSecret($secret);
 

@@ -57,14 +57,12 @@ final class Digest
         return $digest;
     }
 
+    /**
+     * Never throws, so the secret cannot end up in an exception trace (PHP 8.0 has no
+     * #[SensitiveParameter]); hash() and the file and stream methods check the algorithm instead
+     */
     public function withSecret(string $secret): self
     {
-        if ($secret === '') {
-            throw new ConfigurationException('An HMAC secret cannot be empty.');
-        }
-
-        self::assertHmacAlgorithm($this->algorithm);
-
         $digest = clone $this;
         $digest->secret = $secret;
 
@@ -88,6 +86,8 @@ final class Digest
      */
     public function hash(string $data): string
     {
+        $this->assertUsable();
+
         $raw = $this->secret === null
             ? hash($this->algorithm, $data, true)
             : hash_hmac($this->algorithm, $data, $this->secret, true);
@@ -100,6 +100,8 @@ final class Digest
      */
     public function hashFile(string $path): string
     {
+        $this->assertUsable();
+
         if (! is_file($path) || ! is_readable($path)) {
             throw new UnreadableResourceException(sprintf('The file "%s" does not exist or cannot be read.', $path));
         }
@@ -123,6 +125,7 @@ final class Digest
     public function hashStream($stream): string
     {
         self::assertReadableStream($stream);
+        $this->assertUsable();
 
         $context = $this->secret === null
             ? hash_init($this->algorithm)
@@ -204,6 +207,13 @@ final class Digest
     public function __serialize(): array
     {
         throw new LogicException('A fingerprint configuration cannot be serialized because it may hold an HMAC secret.');
+    }
+
+    private function assertUsable(): void
+    {
+        if ($this->secret !== null) {
+            self::assertHmacAlgorithm($this->algorithm);
+        }
     }
 
     private static function assertHmacAlgorithm(string $algorithm): void
