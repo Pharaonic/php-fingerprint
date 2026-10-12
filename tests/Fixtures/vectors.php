@@ -105,4 +105,25 @@ return [
         fn ($b) => $b->ignoreNulls()->ignoreEmptyArrays(),
         'fp1;nm1{s1:di1;}',
     ],
+    // List rules
+    [
+        'unordered orders elements by their bytes',
+        fn () => ['tags' => ['php', 'laravel', 'api']],
+        fn ($b) => $b->at('tags')->unordered(),
+        'fp1;nm1{s4:tagsl3[s3:apis3:phps7:laravel]}',
+    ],
+    ['unordered with mixed types', fn () => [2, 'a', 1, null, true], fn ($b) => $b->unordered(), 'fp1;nl5[b1i1;i2;ns1:a]'],
+    [
+        'sortBy several fields and directions',
+        fn () => [['cat' => 'b', 'p' => 1, 'id' => 3], ['cat' => 'a', 'p' => 2, 'id' => 2], ['cat' => 'a', 'p' => 5, 'id' => 1]],
+        fn ($b) => $b->sortBy(['cat' => 'asc', 'p' => 'desc']),
+        'fp1;nl3[m3{s1:pi5;s2:idi1;s3:cats1:a}m3{s1:pi2;s2:idi2;s3:cats1:a}m3{s1:pi1;s2:idi3;s3:cats1:b}]',
+    ],
+    ['unique is strict', fn () => [1, '1', 1, true, '1'], fn ($b) => $b->unique(), 'fp1;nl3[i1;s1:1b1]'],
+    [
+        'uniqueBy keeps the first occurrence after sorting',
+        fn () => [['id' => 2, 'v' => 'x'], ['id' => 1, 'v' => 'y'], ['id' => 2, 'v' => 'z']],
+        fn ($b) => $b->sortBy('id')->uniqueBy('id'),
+        'fp1;nl2[m2{s1:vs1:ys2:idi1;}m2{s1:vs1:xs2:idi2;}]',
+    ],
 ];

@@ -27,10 +27,15 @@ $configurations = [
     'ignoreEmptyStrings' => fn ($b) => $b->ignoreEmptyStrings(),
     'ignoreEmptyArrays' => fn ($b) => $b->ignoreEmptyArrays(),
     'transform' => fn ($b) => $b->at('a')->transform(fn () => 'y'),
+    'unordered' => fn ($b) => $b->unordered(),
+    'sortBy' => fn ($b) => $b->sortBy('id'),
+    'sortUsing' => fn ($b) => $b->sortUsing(fn ($x, $y) => $y <=> $x),
+    'unique' => fn ($b) => $b->unique(),
+    'uniqueBy' => fn ($b) => $b->uniqueBy('id'),
 ];
 
 it('never changes the builder a method is called on', function (string $method) use ($configurations) {
-    $value = ['a' => ' x ', 'b' => null, 'c' => '', 'd' => [], 'e' => ['f' => 1]];
+    $value = ['a' => ' x ', 'b' => null, 'c' => '', 'd' => [], 'e' => ['f' => 1], 'l' => [['id' => 2], ['id' => 1], ['id' => 2]]];
     $base = Fingerprint::for($value);
     $before = $base->make();
 

@@ -15,8 +15,9 @@ use stdClass;
  *
  * The tree holds null, booleans, integers, floats, strings, lists (plain arrays) and maps (Map).
  *
- * For every child, in this order: only(), ignore(), ignoreWhen(), the child's value rules, its own
- * children, then ignoreNulls() / ignoreEmptyStrings() / ignoreEmptyArrays() on the final value.
+ * For every child, in this order: only(), ignore(), ignoreWhen(), transform(), its own children,
+ * list rules (ordering, then de-duplication), then ignoreNulls() / ignoreEmptyStrings() /
+ * ignoreEmptyArrays() on the final value.
  * Lists stay lists and are re-indexed after removals; paths always use the input keys.
  *
  * @internal
@@ -64,15 +65,28 @@ final class Normalizer
         }
 
         $rules = $this->rules->valuesFor($path);
+        $transform = $rules['transform'] ?? null;
 
-        if (isset($rules['transform'])) {
-            /** @var callable(mixed, string): mixed $transform */
-            $transform = $rules['transform'];
+        if (is_callable($transform)) {
             $value = $transform($value, Path::format($path));
         }
 
         if (is_array($value)) {
             $value = $this->container($value, $path, $depth + 1, $inside);
+
+            if (is_array($value)) {
+                $order = $rules['order'] ?? null;
+                $unique = $rules['unique'] ?? null;
+
+                // Ordering first, so de-duplication keeps the first occurrence in the final order.
+                if ($order instanceof ListOrder) {
+                    $value = $order->apply($value, Path::format($path));
+                }
+
+                if ($unique instanceof ListUnique) {
+                    $value = $unique->apply($value);
+                }
+            }
         } else {
             $this->assertScalar($value, $path);
         }

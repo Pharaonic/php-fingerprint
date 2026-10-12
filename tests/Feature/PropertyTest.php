@@ -88,3 +88,32 @@ it('never depends on the order of only() paths', function (int $seed) {
         expect(Fingerprint::for($value)->only($shuffled)->make())->toBe(Fingerprint::for($value)->only($paths)->make());
     }
 })->with('seeds');
+
+it('never changes when an unordered list is shuffled', function (int $seed) {
+    mt_srand($seed);
+
+    for ($i = 0; $i < 200; $i++) {
+        $list = Gen::list(3);
+        $shuffled = $list;
+        shuffle($shuffled);
+
+        expect(Fingerprint::for($shuffled)->unordered()->make())->toBe(Fingerprint::for($list)->unordered()->make());
+    }
+})->with('seeds');
+
+it('sorts shuffled items with unique keys into one result', function (int $seed) {
+    mt_srand($seed);
+
+    for ($i = 0; $i < 100; $i++) {
+        $items = [];
+
+        foreach (array_unique(array_map(fn () => mt_rand(-50, 50), range(0, mt_rand(0, 8)))) as $id) {
+            $items[] = ['id' => $id, 'payload' => Gen::value(2)];
+        }
+
+        $shuffled = $items;
+        shuffle($shuffled);
+
+        expect(Fingerprint::for($shuffled)->sortBy('id')->make())->toBe(Fingerprint::for($items)->sortBy('id')->make());
+    }
+})->with('seeds');

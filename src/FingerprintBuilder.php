@@ -6,6 +6,8 @@ namespace Pharaonic\Fingerprint;
 
 use Pharaonic\Fingerprint\Exceptions\ConfigurationException;
 use Pharaonic\Fingerprint\Support\Canonicalizer;
+use Pharaonic\Fingerprint\Support\ListOrder;
+use Pharaonic\Fingerprint\Support\ListUnique;
 use Pharaonic\Fingerprint\Support\Path;
 use Pharaonic\Fingerprint\Support\Rules;
 
@@ -163,6 +165,61 @@ final class FingerprintBuilder
         return $this->rule('transform', $callback);
     }
 
+    /**
+     * Fingerprint lists regardless of element order
+     *
+     * Elements are ordered by their canonical bytes, so lists holding the same elements
+     * (duplicates included) give the same fingerprint. Has no effect on maps and scalars.
+     */
+    public function unordered(): self
+    {
+        return $this->rule('order', ListOrder::unordered());
+    }
+
+    /**
+     * Order list elements by one or more fields before fingerprinting
+     *
+     * Accepts a field ('id'), a list of fields (['category', 'id']), or fields with a
+     * direction (['category' => 'asc', 'priority' => 'desc']). Fields may be dot paths
+     * inside each element, without wildcards. Ties keep their input order.
+     *
+     * @param string|array<int|string, string> $fields
+     */
+    public function sortBy(string|array $fields): self
+    {
+        return $this->rule('order', ListOrder::by(self::sortFields(is_string($fields) ? [$fields] : $fields)));
+    }
+
+    /**
+     * Order list elements with a comparator before fingerprinting
+     *
+     * The comparator receives two elements as plain PHP values and returns an integer, like usort().
+     *
+     * @param callable(mixed $a, mixed $b): int $comparator
+     */
+    public function sortUsing(callable $comparator): self
+    {
+        return $this->rule('order', ListOrder::using($comparator));
+    }
+
+    /**
+     * Remove repeated list elements, keeping the first occurrence after any ordering rule
+     *
+     * Elements are compared strictly: 1 and '1' are different.
+     */
+    public function unique(): self
+    {
+        return $this->rule('unique', new ListUnique());
+    }
+
+    /**
+     * Remove list elements that repeat a field's value, keeping the first occurrence after any ordering rule
+     */
+    public function uniqueBy(string $field): self
+    {
+        return $this->rule('unique', new ListUnique(self::field($field, 'uniqueBy')));
+    }
+
     public function make(): string
     {
         return hash(self::ALGORITHM, (new Canonicalizer(null, $this->rules))->canonicalize($this->value));
@@ -174,6 +231,51 @@ final class FingerprintBuilder
         $builder->rules->values[] = [$this->scope, $kind, $argument];
 
         return $builder;
+    }
+
+    /**
+     * @param array<mixed> $fields
+     * @return non-empty-list<array{non-empty-list<string>, bool}>
+     */
+    private static function sortFields(array $fields): array
+    {
+        $parsed = [];
+
+        foreach ($fields as $field => $direction) {
+            if (is_int($field)) {
+                [$field, $direction] = [$direction, 'asc'];
+            }
+
+            if (! is_string($field) || ! in_array($direction, ['asc', 'desc'], true)) {
+                throw new ConfigurationException('sortBy() fields must be strings, with the direction "asc" or "desc".');
+            }
+
+            $parsed[] = [self::field($field, 'sortBy'), $direction === 'desc'];
+        }
+
+        if ($parsed === []) {
+            throw new ConfigurationException('sortBy() needs at least one field.');
+        }
+
+        return $parsed;
+    }
+
+    /**
+     * @return non-empty-list<string>
+     */
+    private static function field(string $field, string $method): array
+    {
+        $segments = [];
+
+        foreach (Path::parse($field) as $segment) {
+            if ($segment === null) {
+                throw new ConfigurationException(sprintf('%s() fields cannot contain wildcards, "%s" given.', $method, $field));
+            }
+
+            $segments[] = $segment;
+        }
+
+        return $segments;
     }
 
     /**

@@ -11,4 +11,5 @@ All notable changes to this project are documented in this file.
 - Closures, resources, objects, `NAN` and values nested deeper than 512 levels throw an `UnsupportedValueException` that names the offending path.
 - Filters: `ignore()`, `only()` (path order never matters), `ignoreWhen()`, `ignoreNulls()`, `ignoreEmptyStrings()` and `ignoreEmptyArrays()`. Lists stay lists and are re-indexed after removals; maps stay maps even when emptied.
 - Path rules: `at()` scopes the following value rules to a dot path, and `transform()` replaces a value before it is fingerprinted. Paths use php-dot-array's syntax: `*` matches one key or index, and `\.`, `\*` and `\\` escape a literal character.
+- List rules: `unordered()`, `sortBy()` (one or more fields or dot paths, ascending or descending), `sortUsing()`, `unique()` and `uniqueBy()`. Lists are ordered first, then de-duplicated keeping the first occurrence; the rules leave maps and scalars alone.
 - `FingerprintBuilder::for()` reuses a configuration for another value. Invalid paths, path lists and callback results throw a `ConfigurationException`.
