@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Pharaonic\Fingerprint;
 
 use LogicException;
-use Normalizer as IntlNormalizer;
 use Pharaonic\Fingerprint\Exceptions\ConfigurationException;
-use Pharaonic\Fingerprint\Exceptions\MissingExtensionException;
+use Pharaonic\Fingerprint\Concerns\HasDigest;
+use Pharaonic\Fingerprint\Concerns\HasValueRules;
 use Pharaonic\Fingerprint\Support\Canonicalizer;
 use Pharaonic\Fingerprint\Support\Digest;
 use Pharaonic\Fingerprint\Support\ListOrder;
@@ -30,14 +30,10 @@ use Pharaonic\Fingerprint\Support\Scalars;
  */
 final class FingerprintBuilder
 {
-    private Rules $rules;
-
-    private Digest $digest;
+    use HasDigest;
+    use HasValueRules;
 
     private ?string $namespace = null;
-
-    /** @var non-empty-list<string|null>|null */
-    private ?array $scope = null;
 
     /**
      * @internal Use Fingerprint::for().
@@ -151,29 +147,6 @@ final class FingerprintBuilder
     }
 
     /**
-     * Apply the following value rules to the values at this path
-     */
-    public function at(string $path): self
-    {
-        $builder = clone $this;
-        $builder->scope = Path::parse($path);
-
-        return $builder;
-    }
-
-    /**
-     * Replace the value with the callback's result before it is fingerprinted
-     *
-     * The result is normalized like any other value, so it may be an array.
-     *
-     * @param callable(mixed $value, string $path): mixed $callback
-     */
-    public function transform(callable $callback): self
-    {
-        return $this->rule('transform', $callback);
-    }
-
-    /**
      * Convert objects of a class, or implementing an interface, with a callback
      *
      * The callback's result is normalized like any other value. An exact class match wins,
@@ -194,68 +167,6 @@ final class FingerprintBuilder
         $builder->rules->normalizers[] = [$class, $normalizer];
 
         return $builder;
-    }
-
-    /**
-     * Remove ASCII whitespace (space, tab, line feed, carriage return, vertical tab, form feed) from both ends of strings
-     */
-    public function trim(): self
-    {
-        return $this->rule('trim', true);
-    }
-
-    /**
-     * Turn every run of ASCII whitespace in strings into one space, with none at either end
-     */
-    public function normalizeWhitespace(): self
-    {
-        return $this->rule('whitespace', true);
-    }
-
-    /**
-     * Lowercase strings (UTF-8, through mbstring)
-     */
-    public function lower(): self
-    {
-        return $this->rule('case', 'lower');
-    }
-
-    /**
-     * Uppercase strings (UTF-8, through mbstring)
-     */
-    public function upper(): self
-    {
-        return $this->rule('case', 'upper');
-    }
-
-    /**
-     * Apply a Unicode normalization form to strings: NFC, NFD, NFKC or NFKD
-     *
-     * Needs ext-intl or symfony/polyfill-intl-normalizer.
-     */
-    public function unicode(string $form): self
-    {
-        if (! in_array($form, Scalars::UNICODE_FORMS, true)) {
-            throw new ConfigurationException(sprintf('unicode() accepts NFC, NFD, NFKC or NFKD, "%s" given.', $form));
-        }
-
-        if (! class_exists(IntlNormalizer::class)) {
-            throw new MissingExtensionException('unicode() needs ext-intl or symfony/polyfill-intl-normalizer.');
-        }
-
-        return $this->rule('unicode', $form);
-    }
-
-    /**
-     * Round floats to a number of decimals, from their exact binary value: 0.285 becomes 0.28
-     */
-    public function precision(int $digits): self
-    {
-        if ($digits < 0 || $digits > 53) {
-            throw new ConfigurationException(sprintf('precision() accepts 0 to 53 digits, %d given.', $digits));
-        }
-
-        return $this->rule('precision', $digits);
     }
 
     /**
@@ -371,66 +282,6 @@ final class FingerprintBuilder
         return $builder;
     }
 
-    /**
-     * Hash with another algorithm available to hash() (sha256 by default)
-     *
-     * Non-cryptographic algorithms such as crc32b, fnv1a64 or md5 are fine for change detection
-     * but must not protect anything.
-     */
-    public function algorithm(string $algorithm): self
-    {
-        $builder = clone $this;
-        $builder->digest = $this->digest->withAlgorithm($algorithm);
-
-        return $builder;
-    }
-
-    /**
-     * Sign with an HMAC secret instead of a plain hash
-     *
-     * The secret never appears in var_dump(), print_r() or exception messages, and the builder
-     * cannot be serialized.
-     */
-    public function hmac(string $secret): self
-    {
-        $builder = clone $this;
-        $builder->digest = $this->digest->withSecret($secret);
-
-        return $builder;
-    }
-
-    /**
-     * Lowercase hexadecimal output (the default)
-     */
-    public function hex(): self
-    {
-        return $this->encoding('hex');
-    }
-
-    /**
-     * Raw binary output
-     */
-    public function binary(): self
-    {
-        return $this->encoding('binary');
-    }
-
-    /**
-     * Standard base64 output, with padding
-     */
-    public function base64(): self
-    {
-        return $this->encoding('base64');
-    }
-
-    /**
-     * URL-safe base64 output ("-" and "_"), without padding
-     */
-    public function base64Url(): self
-    {
-        return $this->encoding('base64url');
-    }
-
     public function make(): string
     {
         return $this->digest->hash($this->canonical());
@@ -465,22 +316,6 @@ final class FingerprintBuilder
     private function canonical(): string
     {
         return (new Canonicalizer($this->namespace, $this->rules))->canonicalize($this->value);
-    }
-
-    private function encoding(string $encoding): self
-    {
-        $builder = clone $this;
-        $builder->digest = $this->digest->withEncoding($encoding);
-
-        return $builder;
-    }
-
-    private function rule(string $kind, mixed $argument): self
-    {
-        $builder = clone $this;
-        $builder->rules->values[] = [$this->scope, $kind, $argument];
-
-        return $builder;
     }
 
     /**
