@@ -6,6 +6,7 @@ namespace Pharaonic\Fingerprint\Support;
 
 use LogicException;
 use Pharaonic\Fingerprint\Exceptions\ConfigurationException;
+use Pharaonic\Fingerprint\Exceptions\UnreadableResourceException;
 
 /**
  * Hashing, HMAC, output encoding and constant-time verification
@@ -95,17 +96,76 @@ final class Digest
     }
 
     /**
+     * The encoded hash, or HMAC, of a file's bytes, read in chunks
+     */
+    public function hashFile(string $path): string
+    {
+        if (! is_file($path) || ! is_readable($path)) {
+            throw new UnreadableResourceException(sprintf('The file "%s" does not exist or cannot be read.', $path));
+        }
+
+        $raw = $this->secret === null
+            ? @hash_file($this->algorithm, $path, true)
+            : @hash_hmac_file($this->algorithm, $path, $this->secret, true);
+
+        if ($raw === false) {
+            throw new UnreadableResourceException(sprintf('The file "%s" could not be read.', $path));
+        }
+
+        return $this->encode($raw);
+    }
+
+    /**
+     * The encoded hash, or HMAC, of a stream's bytes from its current position to its end
+     *
+     * @param resource $stream
+     */
+    public function hashStream($stream): string
+    {
+        self::assertReadableStream($stream);
+
+        $context = $this->secret === null
+            ? hash_init($this->algorithm)
+            : hash_init($this->algorithm, HASH_HMAC, $this->secret);
+
+        hash_update_stream($context, $stream);
+
+        return $this->encode(hash_final($context, true));
+    }
+
+    /**
      * Compare the data's hash with an expected one in constant time
      *
      * Hex is compared case-insensitively; the other encodings exactly.
      */
     public function verify(string $data, string $expected): bool
     {
+        return $this->matches($this->hash($data), $expected);
+    }
+
+    /**
+     * Compare an encoded hash with an expected one in constant time
+     */
+    public function matches(string $hash, string $expected): bool
+    {
         if ($this->encoding === 'hex') {
             $expected = strtr($expected, 'ABCDEF', 'abcdef');
         }
 
-        return hash_equals($this->hash($data), $expected);
+        return hash_equals($hash, $expected);
+    }
+
+    public static function assertReadableStream(mixed $stream): void
+    {
+        if (! is_resource($stream) || get_resource_type($stream) !== 'stream') {
+            throw new UnreadableResourceException(sprintf('Expected an open stream, %s given.', get_debug_type($stream)));
+        }
+
+        $mode = stream_get_meta_data($stream)['mode'];
+
+        if (strpbrk($mode, 'r+') === false) {
+            throw new UnreadableResourceException(sprintf('The stream is not readable (mode "%s").', $mode));
+        }
     }
 
     public function encode(string $raw): string

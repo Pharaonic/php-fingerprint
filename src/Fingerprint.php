@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Pharaonic\Fingerprint;
 
+use Pharaonic\Fingerprint\Support\Digest;
+
 /**
  * Deterministic fingerprints of PHP values
  *
@@ -37,6 +39,28 @@ final class Fingerprint
     public static function for(mixed $value): FingerprintBuilder
     {
         return new FingerprintBuilder($value);
+    }
+
+    /**
+     * Start a fingerprint of a file's raw bytes, read in chunks
+     */
+    public static function file(string $path): DigestBuilder
+    {
+        return new DigestBuilder($path);
+    }
+
+    /**
+     * Start a fingerprint of a stream's raw bytes, from its current position to its end
+     *
+     * The stream is never rewound or closed.
+     *
+     * @param resource $stream
+     */
+    public static function stream($stream): DigestBuilder
+    {
+        Digest::assertReadableStream($stream);
+
+        return new DigestBuilder($stream);
     }
 
     /**
