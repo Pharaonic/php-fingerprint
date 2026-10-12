@@ -2,6 +2,10 @@
   <a href="https://php.net" target="_blank"><img src="https://img.shields.io/static/v1?label=PHP&message=8.0&color=blue&style=flat-square" alt="PHP Version : 8.0"></a>
   <img src="https://img.shields.io/static/v1?label=License&message=MIT&color=brightgreen&style=flat-square" alt="License">
   <img src="https://github.com/Pharaonic/php-fingerprint/actions/workflows/build.yml/badge.svg" alt="Tests">
+  <br>
+  <a href="https://packagist.org/packages/pharaonic/php-fingerprint" target="_blank"><img src="https://img.shields.io/static/v1?label=Packagist&message=pharaonic/php-fingerprint&color=blue&logo=packagist&logoColor=white" alt="Source"></a>
+  <a href="https://packagist.org/packages/pharaonic/php-fingerprint" target="_blank"><img src="https://poser.pugx.org/pharaonic/php-fingerprint/v" alt="Packagist Version"></a>
+  <a href="https://packagist.org/packages/pharaonic/php-fingerprint" target="_blank"><img src="https://poser.pugx.org/pharaonic/php-fingerprint/downloads" alt="Packagist Downloads"></a>
 </p>
 
 <h3 align="center">Deterministic fingerprints for PHP data.</h3>
