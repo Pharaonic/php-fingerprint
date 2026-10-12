@@ -2,6 +2,14 @@
 
 All notable changes to this project are documented in this file.
 
+## 8.0.2 - 2026-10-12
+
+### Changed
+
+- The documentation reads as a learning path, from simple to advanced: Getting Started, The Basics, Going Further, Signed Callbacks & Webhooks, then Reference. Each page builds only on the pages before it and links to the next one.
+- A new Signature Examples page covers your own webhooks, Paymob callbacks and Kashier payment hashes, and a new How Rules Combine page explains rule order and precedence.
+- More examples clarify `sortBy()`, namespaces, `onMissing()`, `JsonSerializable` objects and input paths, and the README labels its documentation link.
+
 ## 8.0.1 - 2026-10-12
 
 ### Changed
