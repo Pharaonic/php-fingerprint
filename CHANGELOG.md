@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented in this file.
 
+## 8.0.1 - 2026-10-12
+
+### Changed
+
+- The package page and README show the package cover, and the README links to Packagist with version and download badges.
+
 ## 8.0.0 - 2026-10-12
 
 ### Added
