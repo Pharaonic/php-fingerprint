@@ -48,6 +48,10 @@ final class Tree
      */
     public static function toPhp(mixed $node): mixed
     {
+        if ($node instanceof Date) {
+            return $node->zone === null ? $node->time . 'Z' : $node->time . ' ' . $node->zone;
+        }
+
         if ($node instanceof Map) {
             return array_map([self::class, 'toPhp'], $node->items);
         }

@@ -44,9 +44,9 @@ it('rejects closed resources', function () {
     Fingerprint::make($handle);
 })->throws(UnsupportedValueException::class, 'A value of type resource (closed) cannot be fingerprinted at the root.');
 
-it('rejects objects', function () {
-    Fingerprint::make(new ArrayIterator([]));
-})->throws(UnsupportedValueException::class, 'An object of class ArrayIterator cannot be fingerprinted at the root.');
+it('rejects objects without a supported conversion', function () {
+    Fingerprint::make(new DateTimeZone('UTC'));
+})->throws(UnsupportedValueException::class, 'An object of class DateTimeZone cannot be fingerprinted at the root.');
 
 it('escapes dots, stars and backslashes in error paths', function () {
     Fingerprint::make(['a.b' => ['*' => ['c\\d' => NAN]]]);

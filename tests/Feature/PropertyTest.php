@@ -117,3 +117,19 @@ it('sorts shuffled items with unique keys into one result', function (int $seed)
         expect(Fingerprint::for($shuffled)->sortBy('id')->make())->toBe(Fingerprint::for($items)->sortBy('id')->make());
     }
 })->with('seeds');
+
+it('gives one fingerprint to an instant in any timezone', function (int $seed) {
+    mt_srand($seed);
+    $zones = DateTimeZone::listIdentifiers();
+
+    for ($i = 0; $i < 50; $i++) {
+        $instant = new DateTimeImmutable('@' . mt_rand(0, 4102444800) . '.' . str_pad((string) mt_rand(0, 999999), 6, '0', STR_PAD_LEFT));
+        $expected = Fingerprint::make($instant);
+
+        for ($j = 0; $j < 5; $j++) {
+            $zoned = $instant->setTimezone(new DateTimeZone($zones[mt_rand(0, count($zones) - 1)]));
+
+            expect(Fingerprint::make($zoned))->toBe($expected);
+        }
+    }
+})->with('seeds');

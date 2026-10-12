@@ -25,8 +25,18 @@ it('matches the plain entry point when nothing is configured', function (string 
 })->with(vectorNames(true));
 
 it('gives every vector a distinct document unless it is meant to equal another', function () {
+    $equal = [
+        'float negative zero' => 'float zero',
+        'mutable date with the same instant' => 'date as a UTC instant',
+        'ArrayObject' => 'stdClass is a map',
+        'ArrayIterator over a list' => 'list',
+    ];
+
     $documents = array_column(vectors(), 2);
 
-    // Negative zero folds into zero; both vectors exist on purpose.
-    expect(count(array_unique($documents)))->toBe(count($documents) - 1);
+    foreach ($equal as $name => $twin) {
+        expect(vectors()[$name][2])->toBe(vectors()[$twin][2]);
+    }
+
+    expect(count(array_unique($documents)))->toBe(count($documents) - count($equal));
 });

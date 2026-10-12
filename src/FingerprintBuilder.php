@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace Pharaonic\Fingerprint;
 
+use Normalizer as IntlNormalizer;
 use Pharaonic\Fingerprint\Exceptions\ConfigurationException;
+use Pharaonic\Fingerprint\Exceptions\MissingExtensionException;
 use Pharaonic\Fingerprint\Support\Canonicalizer;
 use Pharaonic\Fingerprint\Support\ListOrder;
 use Pharaonic\Fingerprint\Support\ListUnique;
 use Pharaonic\Fingerprint\Support\Path;
 use Pharaonic\Fingerprint\Support\Rules;
+use Pharaonic\Fingerprint\Support\Scalars;
 
 /**
  * Immutable fingerprint configuration bound to one value
@@ -163,6 +166,131 @@ final class FingerprintBuilder
     public function transform(callable $callback): self
     {
         return $this->rule('transform', $callback);
+    }
+
+    /**
+     * Convert objects of a class, or implementing an interface, with a callback
+     *
+     * The callback's result is normalized like any other value. An exact class match wins,
+     * then the first matching class or interface in declaration order. Applies everywhere,
+     * whatever at() scope is active. Use it to opt Stringable objects in:
+     * normalize(Stringable::class, fn ($value) => (string) $value).
+     *
+     * @param class-string $class
+     * @param callable(object $value): mixed $normalizer
+     */
+    public function normalize(string $class, callable $normalizer): self
+    {
+        if (! class_exists($class) && ! interface_exists($class)) {
+            throw new ConfigurationException(sprintf('normalize() needs an existing class or interface, "%s" given.', $class));
+        }
+
+        $builder = clone $this;
+        $builder->rules->normalizers[] = [$class, $normalizer];
+
+        return $builder;
+    }
+
+    /**
+     * Remove ASCII whitespace (space, tab, line feed, carriage return, vertical tab, form feed) from both ends of strings
+     */
+    public function trim(): self
+    {
+        return $this->rule('trim', true);
+    }
+
+    /**
+     * Turn every run of ASCII whitespace in strings into one space, with none at either end
+     */
+    public function normalizeWhitespace(): self
+    {
+        return $this->rule('whitespace', true);
+    }
+
+    /**
+     * Lowercase strings (UTF-8, through mbstring)
+     */
+    public function lower(): self
+    {
+        return $this->rule('case', 'lower');
+    }
+
+    /**
+     * Uppercase strings (UTF-8, through mbstring)
+     */
+    public function upper(): self
+    {
+        return $this->rule('case', 'upper');
+    }
+
+    /**
+     * Apply a Unicode normalization form to strings: NFC, NFD, NFKC or NFKD
+     *
+     * Needs ext-intl or symfony/polyfill-intl-normalizer.
+     */
+    public function unicode(string $form): self
+    {
+        if (! in_array($form, Scalars::UNICODE_FORMS, true)) {
+            throw new ConfigurationException(sprintf('unicode() accepts NFC, NFD, NFKC or NFKD, "%s" given.', $form));
+        }
+
+        if (! class_exists(IntlNormalizer::class)) {
+            throw new MissingExtensionException('unicode() needs ext-intl or symfony/polyfill-intl-normalizer.');
+        }
+
+        return $this->rule('unicode', $form);
+    }
+
+    /**
+     * Round floats to a number of decimals, from their exact binary value: 0.285 becomes 0.28
+     */
+    public function precision(int $digits): self
+    {
+        if ($digits < 0 || $digits > 53) {
+            throw new ConfigurationException(sprintf('precision() accepts 0 to 53 digits, %d given.', $digits));
+        }
+
+        return $this->rule('precision', $digits);
+    }
+
+    /**
+     * Turn plain decimal strings into numbers: '1' becomes 1, '1.50' becomes 1.5
+     *
+     * Only an optional minus sign, digits without leading zeros, an optional fraction and an
+     * optional exponent qualify; ' 1', '+1', '01', '.5' and '1.' stay strings. Integers that fit
+     * become int, everything else float.
+     */
+    public function normalizeNumericStrings(): self
+    {
+        return $this->rule('numericStrings', true);
+    }
+
+    /**
+     * Turn true, 1, '1' and 'true' into true, and false, 0, '0' and 'false' into false
+     */
+    public function normalizeBooleans(): self
+    {
+        return $this->rule('booleans', true);
+    }
+
+    /**
+     * Truncate dates to a unit: microsecond (the default), second, minute, hour or day
+     */
+    public function datePrecision(string $unit): self
+    {
+        if (! in_array($unit, Scalars::DATE_UNITS, true)) {
+            throw new ConfigurationException(sprintf('datePrecision() accepts microsecond, second, minute, hour or day, "%s" given.', $unit));
+        }
+
+        return $this->rule('datePrecision', $unit);
+    }
+
+    /**
+     * Fingerprint dates by their local time and timezone name instead of their UTC instant
+     */
+    public function keepTimezone(): self
+    {
+        return $this->rule('keepTimezone', true);
     }
 
     /**

@@ -28,6 +28,9 @@ final class Rules
 
     public bool $ignoreEmptyArrays = false;
 
+    /** @var list<array{class-string, callable(object): mixed}> */
+    public array $normalizers = [];
+
     /**
      * Value rules in declaration order; a null pattern applies everywhere
      *
@@ -52,6 +55,29 @@ final class Rules
         }
 
         return $rules;
+    }
+
+    /**
+     * The normalize() callback for an object: an exact class first, then the first matching
+     * class or interface in declaration order
+     *
+     * @return (callable(object): mixed)|null
+     */
+    public function normalizerFor(object $value): ?callable
+    {
+        foreach ($this->normalizers as [$class, $normalizer]) {
+            if (get_class($value) === $class) {
+                return $normalizer;
+            }
+        }
+
+        foreach ($this->normalizers as [$class, $normalizer]) {
+            if ($value instanceof $class) {
+                return $normalizer;
+            }
+        }
+
+        return null;
     }
 
     /**

@@ -39,7 +39,7 @@
     "phpstan/phpstan": "^2.1"
   },
   "suggest": {
-    "ext-intl": "Required only for Unicode normalization rules (unicode('NFC'|'NFD'|'NFKC'|'NFKD'))."
+    "ext-intl": "Required only for unicode() rules, unless symfony/polyfill-intl-normalizer is installed."
   },
   "autoload": {
     "psr-4": {

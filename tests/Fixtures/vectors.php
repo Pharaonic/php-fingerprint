@@ -126,4 +126,66 @@ return [
         fn ($b) => $b->sortBy('id')->uniqueBy('id'),
         'fp1;nl2[m2{s1:vs1:ys2:idi1;}m2{s1:vs1:xs2:idi2;}]',
     ],
+    // Value rules
+    [
+        'trim and lower at a path',
+        fn () => ['email' => "  Ab@X.io\t"],
+        fn ($b) => $b->at('email')->trim()->lower(),
+        'fp1;nm1{s5:emails7:ab@x.io}',
+    ],
+    ['normalizeWhitespace', fn () => "  a \t b\n\nc  ", fn ($b) => $b->normalizeWhitespace(), 'fp1;ns5:a b c'],
+    ['lower is UTF-8 aware', fn () => 'ÉCOLE', fn ($b) => $b->lower(), 'fp1;ns6:école'],
+    ['precision rounds the binary value', fn () => [0.285, 1], fn ($b) => $b->precision(2), 'fp1;nl2[d3fd1eb851eb851eci1;]'],
+    [
+        'normalizeNumericStrings converts plain decimals only',
+        fn () => ['1', '1.50', '01', ' 1', '-0', '1e3'],
+        fn ($b) => $b->normalizeNumericStrings(),
+        'fp1;nl6[i1;d3ff8000000000000s2:01s2: 1d0000000000000000d408f400000000000]',
+    ],
+    [
+        'normalizeBooleans maps exactly eight values',
+        fn () => [true, 1, '1', 'true', false, 0, '0', 'false', 'yes', 2],
+        fn ($b) => $b->normalizeBooleans(),
+        'fp1;nl10[b1b1b1b1b0b0b0b0s3:yesi2;]',
+    ],
+
+    // Dates
+    ['date as a UTC instant', fn () => new DateTimeImmutable('2026-10-12 10:00:00.123456+02:00'), null, 'fp1;nt2026-10-12T08:00:00.123456Z'],
+    ['mutable date with the same instant', fn () => new DateTime('2026-10-12 08:00:00.123456+00:00'), null, 'fp1;nt2026-10-12T08:00:00.123456Z'],
+    [
+        'date truncated to the day',
+        fn () => new DateTimeImmutable('2026-10-12 10:00:00.123456+02:00'),
+        fn ($b) => $b->datePrecision('day'),
+        'fp1;nt2026-10-12T00:00:00.000000Z',
+    ],
+    [
+        'date with its timezone kept',
+        fn () => new DateTimeImmutable('2026-10-12 10:00:00.123456+02:00'),
+        fn ($b) => $b->keepTimezone(),
+        'fp1;nz33:2026-10-12T10:00:00.123456 +02:00',
+    ],
+
+    // Objects
+    ['stdClass is a map', fn () => (object) ['b' => 1, 'a' => 2], null, 'fp1;nm2{s1:ai2;s1:bi1;}'],
+    ['empty stdClass is an empty map', fn () => new stdClass(), null, 'fp1;nm0{}'],
+    ['stdClass with numeric properties stays a map', fn () => (object) ['x', 'y'], null, 'fp1;nm2{i0;s1:xi1;s1:y}'],
+    ['ArrayObject', fn () => new ArrayObject(['b' => 1, 'a' => 2]), null, 'fp1;nm2{s1:ai2;s1:bi1;}'],
+    ['ArrayIterator over a list', fn () => new ArrayIterator([1, 2]), null, 'fp1;nl2[i1;i2;]'],
+    [
+        'JsonSerializable',
+        fn () => new class () implements JsonSerializable {
+            public function jsonSerialize(): mixed
+            {
+                return ['z' => 1];
+            }
+        },
+        null,
+        'fp1;nm1{s1:zi1;}',
+    ],
+    [
+        'normalize() callback',
+        fn () => ['tz' => new DateTimeZone('UTC')],
+        fn ($b) => $b->normalize(DateTimeZone::class, fn (DateTimeZone $zone) => $zone->getName()),
+        'fp1;nm1{s2:tzs3:UTC}',
+    ],
 ];

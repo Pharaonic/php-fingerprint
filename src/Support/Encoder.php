@@ -21,6 +21,8 @@ use LogicException;
  * string   = "s" <byte length> ":" <bytes>
  * list     = "l" <count> "[" value* "]"
  * map      = "m" <count> "{" (key value)* "}"    keys sorted by their token bytes
+ * instant  = "t" <Y-m-d\TH:i:s.u> "Z"             a date as a UTC instant
+ * zoned    = "z" <length> ":" <Y-m-d\TH:i:s.u> " " <timezone name>   keepTimezone()
  * ```
  *
  * Changing any byte produced here changes stored fingerprints: it needs a new format version.
@@ -61,6 +63,10 @@ final class Encoder
             return self::string($node);
         }
 
+        if ($node instanceof Date) {
+            return self::date($node);
+        }
+
         if ($node instanceof Map) {
             $entries = [];
 
@@ -76,6 +82,17 @@ final class Encoder
         }
 
         throw new LogicException(sprintf('A normalized tree cannot hold %s.', get_debug_type($node)));
+    }
+
+    public static function date(Date $date): string
+    {
+        if ($date->zone === null) {
+            return 't' . $date->time . 'Z';
+        }
+
+        $local = $date->time . ' ' . $date->zone;
+
+        return 'z' . strlen($local) . ':' . $local;
     }
 
     public static function null(): string
