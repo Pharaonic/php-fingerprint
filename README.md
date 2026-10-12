@@ -22,7 +22,15 @@ use Pharaonic\Fingerprint\Fingerprint;
 Fingerprint::make(['id' => 7, 'tags' => ['php', 'laravel']]);
 // Same result for ['tags' => ['php', 'laravel'], 'id' => 7]: key order never matters.
 // Different result for ['id' => '7', ...] or a reordered list: types and list order do.
+
+Fingerprint::for($order)
+    ->ignore('updated_at')
+    ->at('customer.email')->trim()->lower()
+    ->hmac($secret)
+    ->make();
 ```
+
+For protocols that sign fields in a fixed order, such as payment gateway callbacks, `Fingerprint::signature($payload)->fields([...])` builds and verifies the exact ordered message instead.
 
 ## Documentation
 

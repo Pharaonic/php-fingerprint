@@ -1,0 +1,24 @@
+- Getting Started
+  - [Overview](#overview)
+  - [Installation](#installation)
+- Fingerprints
+  - [Basic Usage](#basic-usage)
+  - [Canonical Rules](#canonical-rules)
+  - [Paths & Wildcards](#paths)
+  - [Filtering](#filtering)
+  - [Normalization](#normalization)
+  - [Lists](#lists)
+  - [Objects](#objects)
+- Hashing & Signing
+  - [Hashing & HMAC](#hashing)
+  - [Ordered Signatures](#signatures)
+  - [Files & Streams](#files-and-streams)
+- API Reference
+  - [Debugging](#debugging)
+  - [Guarantees & Limitations](#guarantees)
+  - [Classes & Methods](#api-reference)
+- Examples
+  - [Use Cases](#examples)
+  - [Troubleshooting](#troubleshooting)
+- Community
+  - [Contributors](#contributors)

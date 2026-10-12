@@ -26,7 +26,7 @@ Enum support starts on `8.1.x`. `8.0.x` has none in any form.
 
 ## Package-specific constraints
 
-- Only `ext-mbstring` is required at runtime. `unicode()` needs a `Normalizer` class: ext-intl or `symfony/polyfill-intl-normalizer`. The dev tools pull in the polyfill, so the missing-extension test is skipped in this repository.
+- Only `ext-mbstring` is required at runtime. `unicode()` needs a `Normalizer` class: ext-intl or `symfony/polyfill-intl-normalizer`. The dev tools pull in the polyfill, so the missing-extension test runs in a child PHP process that autoloads only `src/`, on PHP builds without intl (CI's no-intl job).
 - `lower()`, `upper()` and `unicode()` depend on the Unicode tables of mbstring and ICU, which can differ between PHP builds for newly assigned code points. Golden vectors only use characters that are stable across them.
 - CI runs the tests on Linux and Windows, with lowest and highest dependencies, and once without `ext-intl`.
 
