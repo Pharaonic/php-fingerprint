@@ -1,0 +1,79 @@
+{
+  "name": "pharaonic/php-fingerprint",
+  "description": "Deterministic fingerprints and ordered signatures for PHP data: canonical map ordering, configurable list semantics, path-aware normalization, hashing, HMAC and protocol-safe field signing.",
+  "type": "library",
+  "license": "MIT",
+  "keywords": [
+    "php",
+    "fingerprint",
+    "hash",
+    "canonical",
+    "checksum",
+    "hmac",
+    "signature",
+    "idempotency",
+    "deduplication",
+    "change detection",
+    "pharaonic"
+  ],
+  "authors": [
+    {
+      "name": "Moamen Eltouny (Raggi)",
+      "email": "raggigroup@gmail.com"
+    }
+  ],
+  "homepage": "https://github.com/Pharaonic/php-fingerprint",
+  "support": {
+    "docs": "https://pharaonic.dev/packages/php/fingerprint",
+    "issues": "https://github.com/Pharaonic/php-fingerprint/issues",
+    "source": "https://github.com/Pharaonic/php-fingerprint",
+    "security": "https://github.com/Pharaonic/php-fingerprint/security/policy"
+  },
+  "require": {
+    "php": ">=8.0 <8.1",
+    "ext-mbstring": "*"
+  },
+  "require-dev": {
+    "laravel/pint": "^1.5",
+    "pestphp/pest": "^1.23",
+    "phpstan/phpstan": "^2.1"
+  },
+  "suggest": {
+    "ext-intl": "Required only for Unicode normalization rules (unicode('NFC'|'NFD'|'NFKC'|'NFKD'))."
+  },
+  "autoload": {
+    "psr-4": {
+      "Pharaonic\\Fingerprint\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Pharaonic\\Fingerprint\\Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "test": "@php vendor/bin/pest",
+    "analyse": "@php vendor/bin/phpstan analyse --memory-limit=1G",
+    "format": "@php vendor/bin/pint",
+    "format:check": "@php vendor/bin/pint --test",
+    "security": "@composer audit",
+    "check": [
+      "@composer validate --strict",
+      "@format:check",
+      "@analyse",
+      "@test",
+      "@security"
+    ]
+  },
+  "config": {
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    },
+    "audit": {
+      "abandoned": "report"
+    },
+    "sort-packages": true
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true
+}

@@ -1,0 +1,118 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - '8.*.x'
+      - develop
+    paths-ignore:
+      - 'README.md'
+      - 'docs/**'
+
+  pull_request:
+    branches:
+      - '8.*.x'
+      - develop
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  php:
+    name: Resolve PHP version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.php.outputs.version }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      # Every branch declares exactly one PHP minor (">=8.N <8.N+1"), so the
+      # version comes from composer.json on any branch.
+      - name: Detect target PHP version
+        id: php
+        shell: bash
+        run: |
+          constraint="$(jq -r '.require.php' composer.json)"
+
+          if [[ ! "$constraint" =~ ^\>=(8\.[0-9]+) ]]; then
+            echo "Cannot read the target PHP minor from require.php: $constraint" >&2
+            exit 1
+          fi
+
+          echo "version=${BASH_REMATCH[1]}" >> "$GITHUB_OUTPUT"
+
+  check:
+    name: Check
+    needs: php
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ needs.php.outputs.version }}
+          extensions: mbstring, intl
+          coverage: none
+          tools: composer:v2
+
+      - name: Install dependencies
+        uses: ramsey/composer-install@v4
+
+      - name: Check
+        run: composer check
+
+  tests:
+    name: Tests - ${{ matrix.os }} - ${{ matrix.dependencies }}${{ matrix.intl && ' - intl' || '' }}
+    needs: php
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      max-parallel: 2
+
+      fail-fast: false
+
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+        dependencies:
+          - lowest
+          - highest
+        intl:
+          - true
+        include:
+          # ext-intl is optional; only unicode() rules need it.
+          - os: ubuntu-latest
+            dependencies: highest
+            intl: false
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ needs.php.outputs.version }}
+          extensions: mbstring, ${{ matrix.intl && 'intl' || ':intl' }}
+          coverage: none
+          tools: composer:v2
+
+      - name: Install dependencies
+        uses: ramsey/composer-install@v4
+        with:
+          dependency-versions: ${{ matrix.dependencies }}
+
+      - name: Run tests
+        run: composer test
