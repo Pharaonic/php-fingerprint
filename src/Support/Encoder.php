@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Pharaonic\Fingerprint\Support;
 
+use LogicException;
+
 /**
  * Canonical format v1 tokens
  *
@@ -32,6 +34,48 @@ final class Encoder
     public static function document(?string $namespace, string $value): string
     {
         return 'fp1;' . ($namespace === null ? self::null() : self::string($namespace)) . $value;
+    }
+
+    /**
+     * Encode a normalized tree: scalars, lists (plain arrays) and maps (Map)
+     */
+    public static function encode(mixed $node): string
+    {
+        if ($node === null) {
+            return self::null();
+        }
+
+        if (is_bool($node)) {
+            return self::bool($node);
+        }
+
+        if (is_int($node)) {
+            return self::int($node);
+        }
+
+        if (is_float($node)) {
+            return self::float($node);
+        }
+
+        if (is_string($node)) {
+            return self::string($node);
+        }
+
+        if ($node instanceof Map) {
+            $entries = [];
+
+            foreach ($node->items as $key => $item) {
+                $entries[self::key($key)] = self::encode($item);
+            }
+
+            return self::map($entries);
+        }
+
+        if (is_array($node)) {
+            return self::list(array_map([self::class, 'encode'], array_values($node)));
+        }
+
+        throw new LogicException(sprintf('A normalized tree cannot hold %s.', get_debug_type($node)));
     }
 
     public static function null(): string

@@ -73,3 +73,18 @@ it('gives identical documents identical digests', function (int $seed) {
         expect(Fingerprint::make($value))->toBe(hash('sha256', canonical($value)));
     }
 })->with('seeds');
+
+it('never depends on the order of only() paths', function (int $seed) {
+    mt_srand($seed);
+
+    for ($i = 0; $i < 100; $i++) {
+        $value = Gen::map(3);
+        $paths = array_map(fn ($key) => addcslashes((string) $key, '.*\\'), array_keys($value));
+        $paths = array_values(array_filter($paths, fn ($path) => $path !== ''));
+        $paths[] = '*.*';
+        $shuffled = $paths;
+        shuffle($shuffled);
+
+        expect(Fingerprint::for($value)->only($shuffled)->make())->toBe(Fingerprint::for($value)->only($paths)->make());
+    }
+})->with('seeds');

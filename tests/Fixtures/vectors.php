@@ -65,4 +65,44 @@ return [
         null,
         'fp1;nl2[m2{s2:idi2;s3:tags1:b}m2{s2:idi1;s3:tags1:a}]',
     ],
+    // Filtering and path rules
+    [
+        'ignore a nested key',
+        fn () => ['a' => 1, 'b' => ['c' => 2, 'd' => 3]],
+        fn ($b) => $b->ignore('b.c'),
+        'fp1;nm2{s1:ai1;s1:bm1{s1:di3;}}',
+    ],
+    [
+        'ignore with a wildcard',
+        fn () => ['items' => [['id' => 1, 'at' => 'x'], ['id' => 2, 'at' => 'y']]],
+        fn ($b) => $b->ignore('items.*.at'),
+        'fp1;nm1{s5:itemsl2[m1{s2:idi1;}m1{s2:idi2;}]}',
+    ],
+    ['ignore a list element re-indexes the list', fn () => [10, 20, 30], fn ($b) => $b->ignore('1'), 'fp1;nl2[i10;i30;]'],
+    ['a map emptied by ignore stays a map', fn () => ['m' => ['x' => 1]], fn ($b) => $b->ignore('m.x'), 'fp1;nm1{s1:mm0{}}'],
+    ['ignore an escaped dot', fn () => ['a.b' => 1, 'a' => ['b' => 2]], fn ($b) => $b->ignore('a\.b'), 'fp1;nm1{s1:am1{s1:bi2;}}'],
+    [
+        'only with a wildcard',
+        fn () => ['id' => 1, 'name' => 'n', 'address' => ['city' => 'c', 'zip' => 'z'], 'x' => true],
+        fn ($b) => $b->only(['id', 'address.*']),
+        'fp1;nm2{s2:idi1;s7:addressm2{s3:zips1:zs4:citys1:c}}',
+    ],
+    [
+        'only drops ancestors without a selected child',
+        fn () => ['user' => ['name' => 'a'], 'id' => 1],
+        fn ($b) => $b->only(['user.email', 'id']),
+        'fp1;nm1{s2:idi1;}',
+    ],
+    [
+        'transform at a path',
+        fn () => ['email' => ' A@B.C ', 'name' => ' N '],
+        fn ($b) => $b->at('email')->transform(fn ($v) => strtolower(trim($v))),
+        'fp1;nm2{s4:names3: N s5:emails5:a@b.c}',
+    ],
+    [
+        'ignore nulls and the arrays they empty',
+        fn () => ['a' => null, 'b' => ['c' => null], 'd' => 1],
+        fn ($b) => $b->ignoreNulls()->ignoreEmptyArrays(),
+        'fp1;nm1{s1:di1;}',
+    ],
 ];

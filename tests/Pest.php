@@ -30,9 +30,9 @@ function vectors(): array
  *
  * @return array<string, array{string}>
  */
-function vectorNames(): array
+function vectorNames(bool $unconfiguredOnly = false): array
 {
-    $names = array_keys(vectors());
+    $names = array_keys(array_filter(vectors(), fn (array $vector) => ! $unconfiguredOnly || $vector[1] === null));
 
     return array_combine($names, array_map(fn (string $name) => [$name], $names));
 }
@@ -40,4 +40,14 @@ function vectorNames(): array
 function canonical(mixed $value): string
 {
     return (new Canonicalizer())->canonicalize($value);
+}
+
+/**
+ * The canonical document a builder hashes (until a public debug API exists)
+ */
+function builderCanonical(FingerprintBuilder $builder): string
+{
+    $read = fn () => (new Canonicalizer(null, $this->rules))->canonicalize($this->value);
+
+    return Closure::bind($read, $builder, FingerprintBuilder::class)();
 }
