@@ -21,6 +21,14 @@ final class Fingerprint
     }
 
     /**
+     * Whether a value matches an expected SHA-256 hex fingerprint, compared in constant time
+     */
+    public static function verify(mixed $value, string $expected): bool
+    {
+        return self::for($value)->verify($expected);
+    }
+
+    /**
      * Start configuring the fingerprint of a value
      */
     public static function for(mixed $value): FingerprintBuilder

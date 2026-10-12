@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Pharaonic\Fingerprint;
 
+use LogicException;
 use Normalizer as IntlNormalizer;
 use Pharaonic\Fingerprint\Exceptions\ConfigurationException;
 use Pharaonic\Fingerprint\Exceptions\MissingExtensionException;
 use Pharaonic\Fingerprint\Support\Canonicalizer;
+use Pharaonic\Fingerprint\Support\Digest;
 use Pharaonic\Fingerprint\Support\ListOrder;
 use Pharaonic\Fingerprint\Support\ListUnique;
 use Pharaonic\Fingerprint\Support\Path;
@@ -28,9 +30,11 @@ use Pharaonic\Fingerprint\Support\Scalars;
  */
 final class FingerprintBuilder
 {
-    private const ALGORITHM = 'sha256';
-
     private Rules $rules;
+
+    private Digest $digest;
+
+    private ?string $namespace = null;
 
     /** @var non-empty-list<string|null>|null */
     private ?array $scope = null;
@@ -41,6 +45,7 @@ final class FingerprintBuilder
     public function __construct(private mixed $value)
     {
         $this->rules = new Rules();
+        $this->digest = new Digest();
     }
 
     public function __clone()
@@ -348,9 +353,126 @@ final class FingerprintBuilder
         return $this->rule('unique', new ListUnique(self::field($field, 'uniqueBy')));
     }
 
+    /**
+     * Separate fingerprints of identical data used for different purposes
+     *
+     * "invoice" and "order" fingerprints of the same data never match, and neither matches a
+     * fingerprint without a namespace. A namespace is not a secret: use hmac() for that.
+     */
+    public function namespace(string $name): self
+    {
+        if ($name === '') {
+            throw new ConfigurationException('A namespace cannot be empty.');
+        }
+
+        $builder = clone $this;
+        $builder->namespace = $name;
+
+        return $builder;
+    }
+
+    /**
+     * Hash with another algorithm available to hash() (sha256 by default)
+     *
+     * Non-cryptographic algorithms such as crc32b, fnv1a64 or md5 are fine for change detection
+     * but must not protect anything.
+     */
+    public function algorithm(string $algorithm): self
+    {
+        $builder = clone $this;
+        $builder->digest = $this->digest->withAlgorithm($algorithm);
+
+        return $builder;
+    }
+
+    /**
+     * Sign with an HMAC secret instead of a plain hash
+     *
+     * The secret never appears in var_dump(), print_r() or exception messages, and the builder
+     * cannot be serialized.
+     */
+    public function hmac(string $secret): self
+    {
+        $builder = clone $this;
+        $builder->digest = $this->digest->withSecret($secret);
+
+        return $builder;
+    }
+
+    /**
+     * Lowercase hexadecimal output (the default)
+     */
+    public function hex(): self
+    {
+        return $this->encoding('hex');
+    }
+
+    /**
+     * Raw binary output
+     */
+    public function binary(): self
+    {
+        return $this->encoding('binary');
+    }
+
+    /**
+     * Standard base64 output, with padding
+     */
+    public function base64(): self
+    {
+        return $this->encoding('base64');
+    }
+
+    /**
+     * URL-safe base64 output ("-" and "_"), without padding
+     */
+    public function base64Url(): self
+    {
+        return $this->encoding('base64url');
+    }
+
     public function make(): string
     {
-        return hash(self::ALGORITHM, (new Canonicalizer(null, $this->rules))->canonicalize($this->value));
+        return $this->digest->hash($this->canonical());
+    }
+
+    /**
+     * Whether the value matches an expected fingerprint, compared in constant time
+     *
+     * Hex fingerprints are compared case-insensitively, other encodings exactly.
+     */
+    public function verify(string $expected): bool
+    {
+        return $this->digest->verify($this->canonical(), $expected);
+    }
+
+    /**
+     * @return array{algorithm: string, encoding: string, hmac: bool, namespace: string|null}
+     */
+    public function __debugInfo(): array
+    {
+        return $this->digest->describe() + ['namespace' => $this->namespace];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function __serialize(): array
+    {
+        throw new LogicException('A fingerprint builder cannot be serialized because it may hold an HMAC secret.');
+    }
+
+    private function canonical(): string
+    {
+        return (new Canonicalizer($this->namespace, $this->rules))->canonicalize($this->value);
+    }
+
+    private function encoding(string $encoding): self
+    {
+        $builder = clone $this;
+        $builder->digest = $this->digest->withEncoding($encoding);
+
+        return $builder;
     }
 
     private function rule(string $kind, mixed $argument): self

@@ -16,4 +16,8 @@ All notable changes to this project are documented in this file.
 - Number and boolean rules: `precision()` rounds floats from their exact binary value, the same on every PHP version; `normalizeNumericStrings()` converts plain decimal strings; `normalizeBooleans()` maps `true`, `1`, `'1'`, `'true'` and their false counterparts.
 - Dates: `DateTimeInterface` values are fingerprinted by their UTC instant with microseconds; `datePrecision()` truncates them and `keepTimezone()` keeps the local time and timezone instead.
 - Objects: `stdClass` (always a map), `JsonSerializable`, `Traversable` (generators excluded) and `normalize(Class::class, $callback)` for any class or interface. Other objects are rejected, private state is never read, and objects that contain themselves throw a `CircularReferenceException`.
+- Hashing: `algorithm()` accepts any algorithm `hash()` supports (SHA-256 by default), `hmac()` signs with a secret, and `hex()`, `binary()`, `base64()` and `base64Url()` choose the output. Unavailable algorithms and non-HMAC algorithms with a secret throw instead of falling back.
+- `namespace()` keeps fingerprints of identical data used for different purposes apart.
+- `Fingerprint::verify()` and `FingerprintBuilder::verify()` compare in constant time, hex case-insensitively.
+- The HMAC secret never appears in `var_dump()`, `print_r()` or exception messages, and builders refuse to be serialized.
 - `FingerprintBuilder::for()` reuses a configuration for another value. Invalid paths, path lists and callback results throw a `ConfigurationException`.

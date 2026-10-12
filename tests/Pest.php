@@ -47,7 +47,7 @@ function canonical(mixed $value): string
  */
 function builderCanonical(FingerprintBuilder $builder): string
 {
-    $read = fn () => (new Canonicalizer(null, $this->rules))->canonicalize($this->value);
+    $read = fn () => (new Canonicalizer($this->namespace, $this->rules))->canonicalize($this->value);
 
     return Closure::bind($read, $builder, FingerprintBuilder::class)();
 }

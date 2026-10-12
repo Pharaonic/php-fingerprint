@@ -188,4 +188,7 @@ return [
         fn ($b) => $b->normalize(DateTimeZone::class, fn (DateTimeZone $zone) => $zone->getName()),
         'fp1;nm1{s2:tzs3:UTC}',
     ],
+    // Namespaces
+    ['namespace in the header', fn () => ['id' => 1], fn ($b) => $b->namespace('invoice'), 'fp1;s7:invoicem1{s2:idi1;}'],
+    ['namespace is length-framed', fn () => 'b', fn ($b) => $b->namespace('a'), 'fp1;s1:as1:b'],
 ];
