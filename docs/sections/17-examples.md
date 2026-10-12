@@ -1,6 +1,24 @@
 ## Examples
 
-### 1. Skip Unchanged Records in a Sync
+The examples go from the simplest to the most involved. Each one names the pages it builds on.
+
+### 1. Checking Downloaded Files
+
+Uses: [Files & Streams](#files-and-streams).
+
+Compare a download with the checksum the publisher lists, without loading the file into memory:
+
+```php title="src/Releases/ChecksumVerifier.php"
+use Pharaonic\Fingerprint\Fingerprint;
+
+if (! Fingerprint::file($archive)->algorithm('sha512')->verify($publishedChecksum)) {
+    throw new RuntimeException('The download is corrupted.');
+}
+```
+
+### 2. Skip Unchanged Records in a Sync
+
+Uses: [Filtering](#filtering), [Paths](#paths), [Lists](#lists), [namespaces](#hashing).
 
 Store each record's fingerprint and only push records whose fingerprint changed. Timestamps that change on every read are ignored, and tags are compared regardless of order:
 
@@ -23,26 +41,9 @@ foreach ($products as $product) {
 }
 ```
 
-### 2. Idempotency Keys
-
-Turn a request body into an idempotency key, so a retried request with the same content, in any key order, is recognised. HMAC keeps the keys unguessable:
-
-```php title="src/Http/IdempotencyKey.php"
-use Pharaonic\Fingerprint\Fingerprint;
-
-$key = Fingerprint::for(json_decode($body))
-    ->namespace('payment-request')
-    ->ignore('client_timestamp')
-    ->at('customer.email')->trim()->lower()
-    ->at('amount')->precision(2)
-    ->hmac($appSecret)
-    ->base64Url()
-    ->make();
-```
-
-`json_decode()` without `true` returns `stdClass` objects, which are maps just like associative arrays.
-
 ### 3. De-duplicating Imported Contacts
+
+Uses: [Filtering](#filtering), [Normalization](#normalization), [Lists](#lists), [How Rules Combine](#rule-order).
 
 Contacts that differ only in whitespace, case or the order of their phone numbers get the same fingerprint:
 
@@ -63,9 +64,32 @@ foreach ($rows as $row) {
 }
 ```
 
-The `phones.*` rule cleans each number before the `phones` list is ordered and de-duplicated, because a list's rules run after its children.
+The `phones.*` rule cleans each number before the `phones` list is ordered and de-duplicated, because a list's rules run after its children ([How Rules Combine](#rule-order)).
 
-### 4. Signing and Verifying Webhooks
+### 4. Idempotency Keys
+
+Uses: [How Matching Works](#canonical-rules), [Filtering](#filtering), [Normalization](#normalization), [Hashing & HMAC](#hashing).
+
+Turn a request body into an idempotency key, so a retried request with the same content, in any key order, is recognised. HMAC keeps the keys unguessable:
+
+```php title="src/Http/IdempotencyKey.php"
+use Pharaonic\Fingerprint\Fingerprint;
+
+$key = Fingerprint::for(json_decode($body))
+    ->namespace('payment-request')
+    ->ignore('client_timestamp')
+    ->at('customer.email')->trim()->lower()
+    ->at('amount')->precision(2)
+    ->hmac($appSecret)
+    ->base64Url()
+    ->make();
+```
+
+`json_decode()` without `true` returns `stdClass` objects, which are maps just like associative arrays.
+
+### 5. Signing and Verifying Webhooks
+
+Uses: [Ordered Signatures](#signatures).
 
 The sender and the receiver build the same ordered message from the same fields:
 
@@ -96,15 +120,3 @@ The sender and the receiver build the same ordered message from the same fields:
       ->hmac($sharedSecret)
       ->verify($headers['X-Signature'] ?? '');
   ```
-
-### 5. Checking Downloaded Files
-
-Compare a download with the checksum the publisher lists, without loading the file into memory:
-
-```php title="src/Releases/ChecksumVerifier.php"
-use Pharaonic\Fingerprint\Fingerprint;
-
-if (! Fingerprint::file($archive)->algorithm('sha512')->verify($publishedChecksum)) {
-    throw new RuntimeException('The download is corrupted.');
-}
-```

@@ -1,0 +1,55 @@
+## How Rules Combine
+
+Read this when several rules reach the same value and the result isn't what you expected. It brings together the rules from the previous pages, so read those first.
+
+### The Last Rule of a Kind Wins
+
+Rules of different kinds combine: `->at('email')->trim()->lower()` does both. For the same kind of rule, the last one declared for a path wins, so a path rule overrides a global rule of the same kind:
+
+```php
+Fingerprint::for($user)
+    ->lower()                  // every string
+    ->at('code')->upper()      // code is upper case, not lower case
+    ->make();
+```
+
+These rules are one kind each:
+
+- `lower()` and `upper()`;
+- `unordered()`, `sortBy()` and `sortUsing()`;
+- `unique()` and `uniqueBy()`.
+
+A global rule also applies to the root value itself.
+
+### Rules Run in a Fixed Order
+
+Rules always run in the same order, whatever order you declare them in, so `->lower()->trim()` and `->trim()->lower()` are the same. For each value:
+
+1. objects become plain data ([Objects](#objects));
+2. `ignoreWhen()` callbacks, which see the value before any value rule;
+3. `transform()`, whose result is converted again;
+4. string rules: `trim()`, `normalizeWhitespace()`, `unicode()`, then `lower()` or `upper()`;
+5. `normalizeNumericStrings()`, then `precision()`;
+6. `normalizeBooleans()`;
+7. date rules: `datePrecision()` and `keepTimezone()`;
+8. the value's children;
+9. list rules: ordering, then de-duplication.
+
+`ignoreNulls()`, `ignoreEmptyStrings()` and `ignoreEmptyArrays()` check each value after its rules apply.
+
+Because a list's rules run after its children (steps 8 and 9), you can clean each element and then order the list:
+
+```php
+Fingerprint::for($contact)
+    ->at('phones.*')->transform(fn (string $phone) => preg_replace('/\D/', '', $phone))
+    ->at('phones')->unordered()->unique()
+    ->make();
+```
+
+### Paths Refer to the Input
+
+Paths always refer to the **input** keys. When a filter removes `items.1`, the next element is still `items.2` for every other rule, even though the list is re-indexed in the result.
+
+That's the end of step 3, Going Further.
+
+**Next:** step 4, [Ordered Signatures](#signatures): verify payment gateway and webhook signatures.

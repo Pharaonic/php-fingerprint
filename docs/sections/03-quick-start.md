@@ -69,10 +69,11 @@ foreach ($rows as $row) {
 }
 ```
 
-**Verify a payment gateway callback**, such as Paymob: see [Ordered Signatures](#signatures), which has a complete step-by-step example.
+**Verify a payment gateway callback**, such as Paymob: this is step 4 of the [learning path](#overview). If you're in a hurry, [Ordered Signatures](#signatures) has a complete step-by-step example you can copy.
 
 ### Good to Know
 
-- `7` and `'7'` are different, and so are `[1, 2]` and `[2, 1]`. Read [Canonical Rules](#canonical-rules) when two values you expect to match don't.
+- `7` and `'7'` are different, and so are `[1, 2]` and `[2, 1]`. The next page explains why.
 - Builders never change: each method returns a new one, so you can keep a configured builder and reuse it with `->for($otherData)`.
-- When you need more, such as trimming strings, rounding prices or ignoring list order, the **Advanced** pages cover it.
+
+**Next:** [How Matching Works](#canonical-rules) starts step 2, The Basics: when two values share a fingerprint, and how to see what gets hashed.

@@ -1,6 +1,6 @@
 ## Objects
 
-Read this when your data holds objects other than plain arrays: models, value objects, collections.
+Read this when your data holds objects other than plain arrays: models, value objects, collections. `stdClass` and dates already work, as [How Matching Works](#canonical-rules) showed.
 
 Objects are converted into plain data, in this order:
 
@@ -57,3 +57,5 @@ Fingerprint::for($tree)->maxDepth(64)->make();
 ```
 
 Objects count towards the depth. `maxDepth()` must be at least 1.
+
+**Next:** [How Rules Combine](#rule-order): what happens when several rules reach the same value.

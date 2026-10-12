@@ -6,7 +6,7 @@ Lists keep their order by default. List rules change that for every list, or onl
 
 ### unordered()
 
-Elements are ordered by their canonical bytes, so lists that hold the same elements, duplicates included, give the same fingerprint:
+Lists that hold the same elements, in any order, give the same fingerprint:
 
 ```php
 $a = Fingerprint::for(['tags' => ['b', 'a']])->at('tags')->unordered()->make();
@@ -15,11 +15,25 @@ $b = Fingerprint::for(['tags' => ['a', 'b']])->at('tags')->unordered()->make();
 $a === $b; // true
 ```
 
-`['a', 'a', 'b']` and `['a', 'b']` still differ. Add `unique()` when duplicates don't matter either.
+Elements are ordered by their canonical bytes. Duplicates still count: `['a', 'a', 'b']` and `['a', 'b']` differ.
+
+### unique()
+
+`unique()` removes repeated elements and keeps the first occurrence. Add it to `unordered()` when duplicates don't matter either:
+
+```php
+Fingerprint::for(['b', 'a', 'b'])->unordered()->unique()->result()->normalized(); // ['a', 'b']
+```
+
+Elements are compared strictly, so `1` and `'1'` are both kept:
+
+```php
+Fingerprint::for([1, '1', 1, 2])->unique()->result()->normalized(); // [1, '1', 2]
+```
 
 ### sortBy()
 
-Order structured elements by one field, several fields, or fields with a direction. Fields may be dot paths inside each element, without wildcards:
+`unordered()` compares whole elements. For a list of records, such as order items, it's often clearer to order them by one field, several fields, or fields with a direction. Fields may be dot paths inside each element, without wildcards:
 
 ```php
 $builder->at('items')->sortBy('id');
@@ -30,21 +44,11 @@ $builder->at('items')->sortBy('meta.position');
 
 Ties keep their input order. Values of different types are ordered by type: a missing field, then `null`, booleans, numbers, strings, then arrays.
 
-### sortUsing()
+### uniqueBy()
 
-Order elements with a comparator, like `usort()`. It receives two elements as plain PHP values and must return an integer:
-
-```php
-$builder->at('items')->sortUsing(fn (array $a, array $b) => $a['rank'] <=> $b['rank']);
-```
-
-### unique() and uniqueBy()
-
-`unique()` removes repeated elements, compared strictly, so `1` and `'1'` are both kept. `uniqueBy($field)` removes elements that repeat a field's value. Both keep the first occurrence:
+`uniqueBy($field)` removes records that repeat a field's value, keeping the first:
 
 ```php
-Fingerprint::for([1, '1', 1, 2])->unique()->result()->normalized(); // [1, '1', 2]
-
 Fingerprint::for([['id' => 1, 'v' => 'a'], ['id' => 1, 'v' => 'b']])
     ->uniqueBy('id')
     ->result()->normalized();
@@ -53,6 +57,18 @@ Fingerprint::for([['id' => 1, 'v' => 'a'], ['id' => 1, 'v' => 'b']])
 
 Lists are ordered first, then de-duplicated, so "first" means first in the final order. Elements without the field share one value for `uniqueBy()`.
 
+### sortUsing()
+
+When no field order fits, order elements with your own comparator, like `usort()`. It receives two elements as plain PHP values and must return an integer:
+
+```php
+$builder->at('items')->sortUsing(fn (array $a, array $b) => $a['rank'] <=> $b['rank']);
+```
+
 ### Which Rule Wins
 
 `unordered()`, `sortBy()` and `sortUsing()` replace each other for a path, and so do `unique()` and `uniqueBy()`. The last one declared wins.
+
+That's the end of step 2, The Basics. You can now control which values count and when two values are equal.
+
+**Next:** step 3 starts with [Hashing & HMAC](#hashing): secrets, other algorithms and output formats.
