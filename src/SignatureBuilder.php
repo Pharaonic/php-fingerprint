@@ -316,14 +316,14 @@ final class SignatureBuilder
 
         foreach ($fields as $key => $field) {
             if (! is_string($field)) {
-                throw new ConfigurationException(sprintf('fields() expects dot paths as strings, %s given.', get_debug_type($field)));
+                throw new ConfigurationException(sprintf('fields() paths must be strings, %s given.', get_debug_type($field)));
             }
 
             $segments = [];
 
             foreach (Path::parse($field) as $segment) {
                 if ($segment === null) {
-                    throw new ConfigurationException(sprintf('Signature fields cannot contain wildcards, "%s" given.', $field));
+                    throw new ConfigurationException(sprintf('fields() paths cannot contain wildcards, "%s" given.', $field));
                 }
 
                 $segments[] = $segment;

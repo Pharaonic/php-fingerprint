@@ -200,15 +200,17 @@ it('never changes the builder a method is called on', function () use ($payload)
 });
 
 $invalid = [
-    'no fields' => fn ($s) => $s->message(),
-    'empty fields' => fn ($s) => $s->fields([])->message(),
-    'wildcard field' => fn ($s) => $s->fields(['items.*.id']),
-    'non-string field' => fn ($s) => $s->fields([1]),
-    'invalid path' => fn ($s) => $s->fields(['a..b']),
-    'function name as a strategy' => fn ($s) => $s->onMissing('trim'),
-    'unknown null strategy' => fn ($s) => $s->onNull('zero'),
+    'no fields' => [fn ($s) => $s->message(), 'A signature needs at least one field: call fields().'],
+    'empty fields' => [fn ($s) => $s->fields([])->message(), 'A signature needs at least one field: call fields().'],
+    'wildcard field' => [fn ($s) => $s->fields(['items.*.id']), 'fields() paths cannot contain wildcards, "items.*.id" given.'],
+    'non-string field' => [fn ($s) => $s->fields([1]), 'fields() paths must be strings, int given.'],
+    'invalid path' => [fn ($s) => $s->fields(['a..b']), 'The path "a..b" has an empty segment.'],
+    'function name as a strategy' => [fn ($s) => $s->onMissing('trim'), 'onMissing() accepts "throw", "empty", "null", "skip" or a closure, "trim" given.'],
+    'unknown null strategy' => [fn ($s) => $s->onNull('zero'), 'onNull() accepts "throw", "empty", "null", "skip" or a closure, "zero" given.'],
 ];
 
 it('rejects invalid signature configurations', function (string $case) use ($invalid, $payload) {
-    $invalid[$case](Fingerprint::signature($payload));
-})->throws(ConfigurationException::class)->with(array_keys($invalid));
+    [$configure, $message] = $invalid[$case];
+
+    expect(fn () => $configure(Fingerprint::signature($payload)))->toThrow(ConfigurationException::class, $message);
+})->with(array_keys($invalid));
