@@ -40,7 +40,7 @@ For protocols that sign fields in a fixed order, such as payment gateway callbac
 
 ## Documentation
 
-Full documentation: https://pharaonic.dev/packages/php/fingerprint
+Full documentation: [PHP Fingerprint Documentation](https://pharaonic.dev/packages/php/fingerprint).
 
 ## Support & Security
 
