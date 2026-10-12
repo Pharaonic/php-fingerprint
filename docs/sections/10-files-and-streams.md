@@ -1,6 +1,6 @@
 ## Files & Streams
 
-Read this to fingerprint a file or a stream's raw bytes, such as an upload or a download.
+Read this to fingerprint a file or a stream's raw bytes, such as an upload or a download. It uses the hashing options from the [previous page](#hashing).
 
 `Fingerprint::file()` and `Fingerprint::stream()` hash raw bytes exactly as they are, without canonicalization. They read in chunks, so a large file never loads into memory. They return a `DigestBuilder` with the same `algorithm()`, `hmac()`, encoding and `verify()` options:
 
@@ -36,3 +36,5 @@ Fingerprint::file('/missing')->make();
 :::warning Trusted paths only
 `file()` reads whatever path PHP accepts, stream wrappers included. Never pass a path that comes from user input without validating it first.
 :::
+
+**Next:** [Objects](#objects): fingerprint data that holds models, value objects or collections.

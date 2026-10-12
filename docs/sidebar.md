@@ -2,17 +2,20 @@
   - [Overview](#overview)
   - [Installation](#installation)
   - [Quick Start](#quick-start)
-- Payment Gateways & Webhooks
-  - [Ordered Signatures (Paymob)](#signatures)
-- Advanced
-  - [Canonical Rules](#canonical-rules)
-  - [Paths & Wildcards](#paths)
+- The Basics
+  - [How Matching Works](#canonical-rules)
   - [Filtering](#filtering)
+  - [Paths & Wildcards](#paths)
   - [Normalization](#normalization)
   - [Lists](#lists)
-  - [Objects](#objects)
+- Going Further
   - [Hashing & HMAC](#hashing)
   - [Files & Streams](#files-and-streams)
+  - [Objects](#objects)
+  - [How Rules Combine](#rule-order)
+- Signed Callbacks & Webhooks
+  - [Ordered Signatures](#signatures)
+  - [Signature Examples](#signature-examples)
 - Reference
   - [Debugging](#debugging)
   - [Guarantees & Limitations](#guarantees)

@@ -25,7 +25,7 @@ card:
 seo:
   title: "{package.fullName} - Deterministic Hashes, HMAC & Ordered Signatures for PHP Data"
   description: "{package.name} is a PHP package for deterministic fingerprints of arrays and objects, regardless of key order, with path rules, HMAC and ordered signatures for payment gateways and webhooks. {package.downloadsShort}+ downloads, {package.license} licensed."
-  keywords: php fingerprint, php array hash, canonical hash php, deterministic hash, php hmac signature, idempotency key php, change detection php, paymob hmac php, webhook signature php, checksum php
+  keywords: php fingerprint, php array hash, canonical hash php, deterministic hash, php hmac signature, idempotency key php, change detection php, paymob hmac php, kashier hash php, webhook signature php, checksum php
   author: Pharaonic
   images:
     - "{package.cover}"

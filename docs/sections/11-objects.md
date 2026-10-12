@@ -1,6 +1,6 @@
 ## Objects
 
-Read this when your data holds objects other than plain arrays: models, value objects, collections.
+Read this when your data holds objects other than plain arrays: models, value objects, collections. `stdClass` and dates already work, as [How Matching Works](#canonical-rules) showed.
 
 Objects are converted into plain data, in this order:
 
@@ -13,6 +13,25 @@ Objects are converted into plain data, in this order:
 7. anything else throws an `UnsupportedValueException`.
 
 Private and protected properties are never read. What a conversion returns is converted again, so a `JsonSerializable` may return another one.
+
+A value object that already implements `JsonSerializable` needs nothing more:
+
+```php
+final class Money implements JsonSerializable
+{
+    public function __construct(private int $amount, private string $currency) {}
+
+    public function jsonSerialize(): array
+    {
+        return ['amount' => $this->amount, 'currency' => $this->currency];
+    }
+}
+
+Fingerprint::for(['total' => new Money(1050, 'EGP')])->result()->normalized();
+// ['total' => ['amount' => 1050, 'currency' => 'EGP']]
+```
+
+Use a custom normalizer for classes you can't change, or when you want a different shape than `jsonSerialize()`.
 
 ### Custom Normalizers
 
@@ -57,3 +76,5 @@ Fingerprint::for($tree)->maxDepth(64)->make();
 ```
 
 Objects count towards the depth. `maxDepth()` must be at least 1.
+
+**Next:** [How Rules Combine](#rule-order): what happens when several rules reach the same value.

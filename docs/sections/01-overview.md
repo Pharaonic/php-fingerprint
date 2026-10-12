@@ -15,9 +15,22 @@ $fingerprint = Fingerprint::make($product);         // store it
 Fingerprint::verify($product, $fingerprint);        // true while nothing changed
 ```
 
-It also verifies **payment gateway and webhook signatures**, such as Paymob callbacks, with `Fingerprint::signature()`. See [Ordered Signatures](#signatures).
+It also verifies **payment gateway and webhook signatures** with `Fingerprint::signature()`. It works with any provider that signs ordered fields; see the [Signature Examples](#signature-examples) for Paymob, Kashier and your own webhooks.
 
-New here? Start with the [Quick Start](#quick-start): three methods cover most uses. The **Advanced** pages are there when you need more control.
+New here? Start with the [Quick Start](#quick-start): three methods cover most uses.
+
+### Learning Path
+
+The docs are written to be read in order. Each part only uses what the parts before it explained, and you can stop as soon as you have what you need:
+
+| Part | Pages | You'll be able to |
+| --- | --- | --- |
+| Getting Started | [Installation](#installation), [Quick Start](#quick-start) | Make a fingerprint, check whether data changed, ignore a field |
+| The Basics | [How Matching Works](#canonical-rules), [Filtering](#filtering), [Paths & Wildcards](#paths), [Normalization](#normalization), [Lists](#lists) | Decide exactly which values count and when two values are equal |
+| Going Further | [Hashing & HMAC](#hashing), [Files & Streams](#files-and-streams), [Objects](#objects), [How Rules Combine](#rule-order) | Use secrets and other algorithms, hash files, fingerprint your own classes |
+| Signed Callbacks & Webhooks | [Ordered Signatures](#signatures), [Signature Examples](#signature-examples) | Verify a payment gateway callback or a signed webhook, and build the hash a gateway expects |
+
+The **Reference** pages ([Debugging](#debugging), [Classes & Methods](#api-reference), [Examples](#examples), [Troubleshooting](#troubleshooting)…) are for looking things up, not for reading in order.
 
 :::features
 ### Key Order Never Matters {icon="switch"}

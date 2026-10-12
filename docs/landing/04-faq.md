@@ -26,9 +26,9 @@ The latest release requires {package.requiresText}.
 
 A fingerprint answers "is this the same data?": key order never matters and you choose what to ignore. A signature answers "does this payload carry the signature a protocol defines?": fields are joined in exactly the declared order, as payment gateways and webhooks require. The two never share a format.
 
-## How do I verify a Paymob callback?
+## How do I verify a payment gateway callback?
 
-List Paymob's fields in their documented order with `Fingerprint::signature($transaction)->fields([...])`, choose `algorithm('sha512')` and `hmac($secret)`, then call `verify()` with the `hmac` Paymob sent. The documentation has a complete step-by-step example for plain PHP and Laravel.
+List the gateway's fields in their documented order with `Fingerprint::signature($payload)->fields([...])`, choose its algorithm and `hmac($secret)`, then call `verify()` with the signature it sent. Nothing is tied to one gateway: the documentation has complete examples for Paymob (plain PHP and Laravel), Kashier and your own webhooks.
 
 ## Will fingerprints match across servers and PHP versions?
 

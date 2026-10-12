@@ -2,7 +2,7 @@
 
 Read this when equal-looking data should match: extra spaces, upper and lower case, rounding, numbers stored as strings, or dates in different timezones.
 
-Value rules turn equivalent values into the same value before hashing. Each applies to every value of its type, or only at a path after [`at()`](#paths).
+Value rules turn equivalent values into the same value before hashing. Each applies to every value of its type, or only at a path after [`at()`](#paths). The page goes from the most common rules to the most flexible one, `transform()`.
 
 ### Strings
 
@@ -91,3 +91,5 @@ Fingerprint::for(['phone' => '+20 100 000 0000'])
     ->result()->normalized();
 // ['phone' => '201000000000']
 ```
+
+**Next:** [Lists](#lists): ignore the order of a list, or its duplicates.

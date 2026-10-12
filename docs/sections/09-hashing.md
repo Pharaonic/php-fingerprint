@@ -1,6 +1,6 @@
 ## Hashing & HMAC
 
-The default (SHA-256, hex) fits most uses. Read this when the fingerprint must be secret, shorter, or in another format.
+The default (SHA-256, hex) fits most uses. Read this when the fingerprint must be secret, shorter, or in another format. The options go from the simplest (another algorithm or format) to the one that needs care (a secret).
 
 Every builder (`FingerprintBuilder`, `SignatureBuilder` and `DigestBuilder`) shares the same hashing options.
 
@@ -21,8 +21,30 @@ Fingerprint::for($data)->algorithm('xxh128');
 ```
 
 :::warning Non-cryptographic algorithms
-`crc32b`, `fnv1a64`, `md5` and similar algorithms are fine for change detection and cache keys, but anyone can produce a collision. Use SHA-256 or stronger, with `hmac()`, when the fingerprint protects anything.
+`crc32b`, `fnv1a64`, `md5` and similar algorithms are fine for change detection and cache keys, but anyone can produce a collision. Use SHA-256 or stronger, with `hmac()` (below), when the fingerprint protects anything.
 :::
+
+### Output Encodings
+
+| Method | Output for `['a' => 1]` |
+| --- | --- |
+| `hex()` (default) | `8007ef36e8ee76e080e880d450b79d39cd4a544ae3962f08f40d96211ae3946e` |
+| `binary()` | the 32 raw bytes |
+| `base64()` | `gAfvNujuduCA6IDUULedOc1KVErjli8I9A2WIRrjlG4=` |
+| `base64Url()` | `gAfvNujuduCA6IDUULedOc1KVErjli8I9A2WIRrjlG4` (`-` and `_`, no padding) |
+
+### Namespaces
+
+`namespace()` keeps fingerprints of the same data used for different purposes apart. An `"invoice"` fingerprint never matches an `"order"` fingerprint of the same data, nor one without a namespace:
+
+```php
+$invoice = Fingerprint::for(['id' => 7])->namespace('invoice')->make();
+$order = Fingerprint::for(['id' => 7])->namespace('order')->make();
+
+$invoice === $order; // false
+```
+
+A namespace is not a secret: anyone who knows it can compute the same fingerprint. That's what HMAC is for.
 
 ### HMAC
 
@@ -34,15 +56,6 @@ Fingerprint::for($data)->algorithm('sha512')->hmac($secret)->make();
 ```
 
 An empty secret throws a `ConfigurationException`. An algorithm that cannot do HMAC, such as `crc32b`, `fnv1a64` or `joaat`, throws a `ConfigurationException` when you hash, not when you call `hmac()`. That way the secret never shows up in an exception trace.
-
-### Output Encodings
-
-| Method | Output for `['a' => 1]` |
-| --- | --- |
-| `hex()` (default) | `8007ef36e8ee76e080e880d450b79d39cd4a544ae3962f08f40d96211ae3946e` |
-| `binary()` | the 32 raw bytes |
-| `base64()` | `gAfvNujuduCA6IDUULedOc1KVErjli8I9A2WIRrjlG4=` |
-| `base64Url()` | `gAfvNujuduCA6IDUULedOc1KVErjli8I9A2WIRrjlG4` (`-` and `_`, no padding) |
 
 ### Verifying
 
@@ -68,3 +81,5 @@ $builder->verify($received); // true or false
 - A fingerprint is **not encryption**: it can't be reversed, but anyone can fingerprint guessed data and compare. Use `hmac()` when the data is guessable and the fingerprint must not be forgeable.
 - A **namespace is not a secret**: it only keeps fingerprints for different purposes apart.
 - There is **no salt** option. Use `namespace()` to separate purposes and `hmac()` for secrecy.
+
+**Next:** [Files & Streams](#files-and-streams): the same hashing options for raw bytes.

@@ -21,6 +21,8 @@ A field changes on every load: a timestamp, a counter, a cache value. Leave it o
 - For the same kind of rule, the last one wins for a path: a later `upper()` replaces an earlier `lower()`.
 - Paths refer to input keys: a key with a dot in its name needs `\.`, as in `config.app\.name`.
 
+See [How Rules Combine](#rule-order) for the full order.
+
 ### UnsupportedValueException for an object
 
 Only `stdClass`, dates, `JsonSerializable` and `Traversable` objects are converted automatically. Add a `normalize()` callback for the class, or turn the object into an array first. `Stringable` objects need `normalize(Stringable::class, fn ($value) => (string) $value)`.
