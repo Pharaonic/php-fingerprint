@@ -47,11 +47,15 @@ final class Normalizer
      */
     private array $active = [];
 
+    /** Whether no value rule or ignoreWhen() callback applies, so scalars can skip the full pipeline */
+    private bool $plainScalars;
+
     public function __construct(
         private Rules $rules,
         private int $maxDepth,
     ) {
         $this->drop = new stdClass();
+        $this->plainScalars = $rules->values === [] && $rules->ignoreWhen === [];
     }
 
     public function normalize(mixed $value): mixed
@@ -67,12 +71,18 @@ final class Normalizer
      */
     private function node(mixed $value, array $path, int $depth, bool $inside): mixed
     {
+        if ($this->plainScalars && ! is_array($value) && ! is_object($value)) {
+            $this->assertScalar($value, $path);
+
+            return $path === [] ? $value : $this->keepChild($value, $inside);
+        }
+
         $entered = [];
 
         try {
             $value = $this->object($value, $path, $depth, $entered);
 
-            if ($path !== [] && $this->ignoredByCallback($value, $path)) {
+            if ($path !== [] && $this->rules->ignoreWhen !== [] && $this->ignoredByCallback($value, $path)) {
                 return $this->drop;
             }
 
@@ -83,7 +93,7 @@ final class Normalizer
                 $value = $this->object($transform(self::plain($value), Path::format($path)), $path, $depth, $entered);
             }
 
-            $value = Scalars::apply($value, $rules, Path::format($path));
+            $value = Scalars::apply($value, $rules, $path);
 
             if ($value instanceof Map || is_array($value)) {
                 $value = $value instanceof Map
@@ -211,16 +221,19 @@ final class Normalizer
         }
 
         $items = [];
+        $only = $this->rules->only;
+        $ignore = $this->rules->ignore;
 
         foreach ($value as $key => $child) {
-            $childPath = [...$path, $key];
-            $childInside = $inside || Rules::anyMatches($this->rules->only, $childPath);
+            $childPath = $path;
+            $childPath[] = $key;
+            $childInside = $inside || ($only !== [] && Rules::anyMatches($only, $childPath));
 
-            if (! $childInside && ! Rules::anyLeadsTo($this->rules->only, $childPath)) {
+            if (! $childInside && ! Rules::anyLeadsTo($only, $childPath)) {
                 continue;
             }
 
-            if (Rules::anyMatches($this->rules->ignore, $childPath)) {
+            if ($ignore !== [] && Rules::anyMatches($ignore, $childPath)) {
                 continue;
             }
 

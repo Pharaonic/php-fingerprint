@@ -29,9 +29,14 @@ final class Scalars
 
     /**
      * @param array<string, mixed> $rules
+     * @param list<int|string>|string $path Segments, formatted only when an error needs them.
      */
-    public static function apply(mixed $value, array $rules, string $path): mixed
+    public static function apply(mixed $value, array $rules, array|string $path): mixed
     {
+        if ($rules === [] && ! $value instanceof DateTimeInterface) {
+            return $value; // Dates are always converted, even without rules.
+        }
+
         if (is_string($value)) {
             $value = self::string($value, $rules, $path);
         }
@@ -59,8 +64,9 @@ final class Scalars
 
     /**
      * @param array<string, mixed> $rules
+     * @param list<int|string>|string $path
      */
-    private static function string(string $value, array $rules, string $path): string
+    private static function string(string $value, array $rules, array|string $path): string
     {
         if (isset($rules['trim'])) {
             $value = trim($value, self::WHITESPACE);
@@ -74,7 +80,7 @@ final class Scalars
         $case = $rules['case'] ?? null;
 
         if (($form !== null || $case !== null) && ! mb_check_encoding($value, 'UTF-8')) {
-            throw UnsupportedValueException::at($path, 'A string that is not valid UTF-8 cannot be case-folded or Unicode-normalized');
+            throw UnsupportedValueException::at(is_array($path) ? Path::format($path) : $path, 'A string that is not valid UTF-8 cannot be case-folded or Unicode-normalized');
         }
 
         if (is_string($form)) {
@@ -82,7 +88,7 @@ final class Scalars
             $normalized = IntlNormalizer::normalize($value, $forms[$form] ?? IntlNormalizer::FORM_C);
 
             if (! is_string($normalized)) {
-                throw UnsupportedValueException::at($path, 'The string could not be Unicode-normalized');
+                throw UnsupportedValueException::at(is_array($path) ? Path::format($path) : $path, 'The string could not be Unicode-normalized');
             }
 
             $value = $normalized;

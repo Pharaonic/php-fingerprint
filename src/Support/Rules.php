@@ -46,6 +46,10 @@ final class Rules
      */
     public function valuesFor(array $path): array
     {
+        if ($this->values === []) {
+            return [];
+        }
+
         $rules = [];
 
         foreach ($this->values as [$pattern, $kind, $argument]) {
