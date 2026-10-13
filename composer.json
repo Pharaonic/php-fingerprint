@@ -30,7 +30,7 @@
     "security": "https://github.com/Pharaonic/php-fingerprint/security/policy"
   },
   "require": {
-    "php": ">=8.3 <8.4",
+    "php": ">=8.4 <8.5",
     "ext-mbstring": "*"
   },
   "require-dev": {

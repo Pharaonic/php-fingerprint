@@ -23,7 +23,7 @@ An algorithm PHP doesn't have throws a `ConfigurationException` instead of falli
 
 ```php
 Fingerprint::for($data)->algorithm('sha257');
-// ConfigurationException: The hash algorithm "sha257" is not available on PHP 8.3.35.
+// ConfigurationException: The hash algorithm "sha257" is not available on PHP 8.4.19.
 ```
 
 :::warning Non-cryptographic algorithms
