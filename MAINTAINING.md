@@ -8,7 +8,7 @@ Deterministic fingerprints of structured PHP data (canonical mode) and ordered p
 
 ## Supported PHP lines
 
-One branch per PHP minor, each requiring exactly that minor (`"php": ">=8.1 <8.2"`):
+One branch per PHP minor, each requiring exactly that minor (`"php": ">=8.2 <8.3"`):
 
 ```text
 8.0.x  8.1.x  8.2.x  8.3.x  8.4.x  8.5.x
