@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented in this file.
 
+## 8.0.3 - 2026-10-13
+
+### Changed
+
+- The Installation and Guarantees & Limitations pages describe only the 8.0.x line, without notes about features of later PHP lines.
+
 ## 8.0.2 - 2026-10-12
 
 ### Changed
