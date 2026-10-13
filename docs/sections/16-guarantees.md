@@ -6,7 +6,7 @@ The same value with the same configuration gives the same fingerprint:
 
 - on every run, machine and operating system;
 - whatever the locale (`setlocale()`) and the `precision` / `serialize_precision` ini settings;
-- on every supported PHP version and release line: canonical format v1 is the same on all of them, and the test suite checks hand-written golden vectors on each line.
+- on every supported PHP version: canonical format v1 never changes, and the test suite checks it against hand-written golden vectors.
 
 The canonical form starts with a version header (`fp1;`). If the format ever has to change, it gets a new version, so old and new fingerprints can never collide by accident.
 
@@ -17,14 +17,6 @@ The canonical form starts with a version header (`fp1;`). If the format ever has
 - Types are preserved unless you choose a normalization rule.
 - `null` differs from a missing key unless you use `ignoreNulls()`.
 - The order of `only()` paths never matters. The order of signature `fields()` always does.
-
-### Release Lines
-
-Each release line requires exactly one PHP version and keeps canonical format v1:
-
-| Line | PHP |
-| --- | --- |
-| 8.0.x | 8.0 |
 
 ### Limitations
 

@@ -19,19 +19,6 @@ It also verifies **payment gateway and webhook signatures** with `Fingerprint::s
 
 New here? Start with the [Quick Start](#quick-start): three methods cover most uses.
 
-### Learning Path
-
-The docs are written to be read in order. Each part only uses what the parts before it explained, and you can stop as soon as you have what you need:
-
-| Part | Pages | You'll be able to |
-| --- | --- | --- |
-| Getting Started | [Installation](#installation), [Quick Start](#quick-start) | Make a fingerprint, check whether data changed, ignore a field |
-| The Basics | [How Matching Works](#canonical-rules), [Filtering](#filtering), [Paths & Wildcards](#paths), [Normalization](#normalization), [Lists](#lists) | Decide exactly which values count and when two values are equal |
-| Going Further | [Hashing & HMAC](#hashing), [Files & Streams](#files-and-streams), [Objects](#objects), [How Rules Combine](#rule-order) | Use secrets and other algorithms, hash files, fingerprint your own classes |
-| Signed Callbacks & Webhooks | [Ordered Signatures](#signatures), [Signature Examples](#signature-examples) | Verify a payment gateway callback or a signed webhook, and build the hash a gateway expects |
-
-The **Reference** pages ([Debugging](#debugging), [Classes & Methods](#api-reference), [Examples](#examples), [Troubleshooting](#troubleshooting)…) are for looking things up, not for reading in order.
-
 :::features
 ### Key Order Never Matters {icon="switch"}
 Associative arrays and stdClass objects are ordered canonically at every level, so a reordered payload keeps its fingerprint.

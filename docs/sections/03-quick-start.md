@@ -69,7 +69,7 @@ foreach ($rows as $row) {
 }
 ```
 
-**Verify a payment gateway callback or a webhook:** the [learning path](#overview) gets there after the basics. If you're in a hurry, [Signature Examples](#signature-examples) has complete examples you can copy, including Paymob and Kashier.
+**Verify a payment gateway callback or a webhook:** [Ordered Signatures](#signatures) explains how it works, and [Signature Examples](#signature-examples) has complete examples you can copy, including Paymob and Kashier.
 
 ### Good to Know
 

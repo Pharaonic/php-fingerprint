@@ -4,7 +4,7 @@ Install the package with Composer. There is nothing to register or configure.
 
 ### Requirements
 
-- PHP 8.0.x (each `8.x` release line targets the matching PHP version)
+- PHP 8.0
 - `ext-mbstring`
 - `ext-intl` or `symfony/polyfill-intl-normalizer`, only if you use the `unicode()` rule
 
