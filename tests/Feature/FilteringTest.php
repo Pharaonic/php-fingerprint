@@ -92,15 +92,15 @@ it('ignores values chosen by a callback with their escaped path', function () {
 
 it('passes the value before value rules to ignoreWhen()', function () {
     $hash = Fingerprint::for(['a' => ' x ', 'b' => 1])
-        ->ignoreWhen(fn (string $path, mixed $value) => $value === ' x ')
-        ->at('a')->transform(fn () => 'changed')
+        ->ignoreWhen(fn(string $path, mixed $value) => $value === ' x ')
+        ->at('a')->transform(fn() => 'changed')
         ->make();
 
     expect($hash)->toBe(Fingerprint::make(['b' => 1]));
 });
 
 it('rejects an ignoreWhen() callback that does not return a boolean', function () {
-    Fingerprint::for(['a' => 1])->ignoreWhen(fn () => 1)->make();
+    Fingerprint::for(['a' => 1])->ignoreWhen(fn() => 1)->make();
 })->throws(ConfigurationException::class, 'An ignoreWhen() callback must return a boolean, int returned at path "a".');
 
 it('ignores nulls, empty strings and empty arrays only when asked', function () {
@@ -116,12 +116,12 @@ it('ignores nulls, empty strings and empty arrays only when asked', function () 
 });
 
 $invalid = [
-    'empty ignore path' => fn ($b) => $b->ignore(''),
-    'empty segment' => fn ($b) => $b->ignore('a..b'),
-    'non-string path' => fn ($b) => $b->ignore([1]),
-    'empty only' => fn ($b) => $b->only([]),
-    'non-string only path' => fn ($b) => $b->only([null]),
-    'invalid at path' => fn ($b) => $b->at('a.'),
+    'empty ignore path' => fn($b) => $b->ignore(''),
+    'empty segment' => fn($b) => $b->ignore('a..b'),
+    'non-string path' => fn($b) => $b->ignore([1]),
+    'empty only' => fn($b) => $b->only([]),
+    'non-string only path' => fn($b) => $b->only([null]),
+    'invalid at path' => fn($b) => $b->at('a.'),
 ];
 
 it('rejects invalid paths and path lists', function (string $case) use ($invalid) {

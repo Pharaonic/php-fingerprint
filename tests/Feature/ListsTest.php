@@ -6,7 +6,7 @@ use Pharaonic\Fingerprint\Exceptions\ConfigurationException;
 use Pharaonic\Fingerprint\Fingerprint;
 
 it('ignores element order in unordered lists, duplicates included', function () {
-    $hash = fn (array $tags) => Fingerprint::for(['tags' => $tags])->at('tags')->unordered()->make();
+    $hash = fn(array $tags) => Fingerprint::for(['tags' => $tags])->at('tags')->unordered()->make();
 
     expect($hash(['php', 'laravel', 'php']))->toBe($hash(['laravel', 'php', 'php']))
         ->and($hash([1, 1, 2]))->not->toBe($hash([1, 2, 2]))
@@ -73,7 +73,7 @@ it('sorts with a comparator that receives plain PHP values', function () {
 });
 
 it('rejects a comparator that does not return an integer', function () {
-    Fingerprint::for(['l' => [2, 1]])->at('l')->sortUsing(fn ($a, $b) => $a > $b)->make();
+    Fingerprint::for(['l' => [2, 1]])->at('l')->sortUsing(fn($a, $b) => $a > $b)->make();
 })->throws(ConfigurationException::class, 'A sortUsing() comparator must return an integer, bool returned at path "l".');
 
 it('removes repeated elements strictly', function () {
@@ -91,16 +91,16 @@ it('lets the last ordering rule win', function () {
     $items = [['id' => 2, 'n' => 'a'], ['id' => 1, 'n' => 'b']];
 
     expect(Fingerprint::for($items)->unordered()->sortBy(['id' => 'desc'])->make())->toBe(Fingerprint::make($items))
-        ->and(Fingerprint::for($items)->sortBy('id')->sortUsing(fn () => 0)->make())->toBe(Fingerprint::make($items));
+        ->and(Fingerprint::for($items)->sortBy('id')->sortUsing(fn() => 0)->make())->toBe(Fingerprint::make($items));
 });
 
 $invalid = [
-    'no fields' => fn ($b) => $b->sortBy([]),
-    'wildcard field' => fn ($b) => $b->sortBy('items.*'),
-    'bad direction' => fn ($b) => $b->sortBy(['id' => 'down']),
-    'non-string field' => fn ($b) => $b->sortBy([['id']]),
-    'empty field' => fn ($b) => $b->sortBy(''),
-    'wildcard uniqueBy' => fn ($b) => $b->uniqueBy('*'),
+    'no fields' => fn($b) => $b->sortBy([]),
+    'wildcard field' => fn($b) => $b->sortBy('items.*'),
+    'bad direction' => fn($b) => $b->sortBy(['id' => 'down']),
+    'non-string field' => fn($b) => $b->sortBy([['id']]),
+    'empty field' => fn($b) => $b->sortBy(''),
+    'wildcard uniqueBy' => fn($b) => $b->uniqueBy('*'),
 ];
 
 it('rejects invalid sort and unique fields', function (string $case) use ($invalid) {

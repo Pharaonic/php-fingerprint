@@ -51,12 +51,12 @@ it('separates namespaces', function () use ($value) {
 });
 
 $invalid = [
-    'unknown algorithm' => fn ($b) => $b->algorithm('sha257'),
-    'algorithm missing on PHP 8.0' => fn ($b) => $b->algorithm('xxh128'),
-    'HMAC with a checksum, reported when hashing' => fn ($b) => $b->algorithm('crc32b')->hmac('key')->make(),
-    'checksum after HMAC' => fn ($b) => $b->hmac('key')->algorithm('fnv1a64'),
-    'empty secret' => fn ($b) => $b->hmac(''),
-    'empty namespace' => fn ($b) => $b->namespace(''),
+    'unknown algorithm' => fn($b) => $b->algorithm('sha257'),
+    'HMAC with xxh128, reported when hashing' => fn($b) => $b->algorithm('xxh128')->hmac('key')->make(),
+    'HMAC with a checksum, reported when hashing' => fn($b) => $b->algorithm('crc32b')->hmac('key')->make(),
+    'checksum after HMAC' => fn($b) => $b->hmac('key')->algorithm('fnv1a64'),
+    'empty secret' => fn($b) => $b->hmac(''),
+    'empty namespace' => fn($b) => $b->namespace(''),
 ];
 
 it('rejects invalid hashing options', function (string $case) use ($invalid) {

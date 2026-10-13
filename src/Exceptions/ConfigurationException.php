@@ -9,6 +9,4 @@ use InvalidArgumentException;
 /**
  * Thrown when a builder is configured with an invalid path, rule, callback result or option.
  */
-final class ConfigurationException extends InvalidArgumentException implements FingerprintException
-{
-}
+final class ConfigurationException extends InvalidArgumentException implements FingerprintException {}

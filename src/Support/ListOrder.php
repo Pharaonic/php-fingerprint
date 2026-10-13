@@ -61,8 +61,8 @@ final class ListOrder
         }
 
         if ($this->fields === []) {
-            $keyed = array_map(static fn (mixed $item): array => [Encoder::encode($item), $item], $items);
-            usort($keyed, static fn (array $a, array $b): int => strcmp($a[0], $b[0]));
+            $keyed = array_map(static fn(mixed $item): array => [Encoder::encode($item), $item], $items);
+            usort($keyed, static fn(array $a, array $b): int => strcmp($a[0], $b[0]));
 
             return array_column($keyed, 1);
         }
@@ -101,7 +101,7 @@ final class ListOrder
      */
     private function sortUsing(array $items, callable $comparator, string $path): array
     {
-        $keyed = array_map(static fn (mixed $item): array => [Tree::toPhp($item), $item], $items);
+        $keyed = array_map(static fn(mixed $item): array => [Tree::toPhp($item), $item], $items);
 
         usort($keyed, static function (array $a, array $b) use ($comparator, $path): int {
             $result = $comparator($a[0], $b[0]);

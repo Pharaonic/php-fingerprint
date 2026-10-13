@@ -24,7 +24,7 @@ it('rejects NAN', function () {
 })->throws(UnsupportedValueException::class, 'NAN cannot be fingerprinted because it is not equal to itself at path "a.1".');
 
 it('rejects closures', function () {
-    Fingerprint::make(['fn' => fn () => 1]);
+    Fingerprint::make(['fn' => fn() => 1]);
 })->throws(UnsupportedValueException::class, 'A closure cannot be fingerprinted at path "fn".');
 
 it('rejects resources', function () {
@@ -85,7 +85,7 @@ it('stops on self-referencing arrays instead of recursing forever', function () 
     $value = ['a' => 1];
     $value['self'] = &$value;
 
-    expect(fn () => Fingerprint::make($value))->toThrow(MaximumDepthExceededException::class);
+    expect(fn() => Fingerprint::make($value))->toThrow(MaximumDepthExceededException::class);
 });
 
 it('handles large strings', function () {

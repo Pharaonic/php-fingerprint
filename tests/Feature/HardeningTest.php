@@ -29,13 +29,13 @@ it('rejects nesting deeper than a custom maximum depth', function () {
 it('counts objects towards the depth', function () {
     $value = (object) ['a' => (object) ['b' => (object) ['c' => 1]]];
 
-    expect(fn () => Fingerprint::for($value)->maxDepth(2)->make())->toThrow(MaximumDepthExceededException::class)
+    expect(fn() => Fingerprint::for($value)->maxDepth(2)->make())->toThrow(MaximumDepthExceededException::class)
         ->and(Fingerprint::for($value)->maxDepth(3)->make())->toBeString();
 });
 
 it('allows deeper nesting than the default when asked', function () {
     expect(Fingerprint::for(nested(600))->maxDepth(600)->make())->toBeString()
-        ->and(fn () => Fingerprint::make(nested(600)))->toThrow(MaximumDepthExceededException::class);
+        ->and(fn() => Fingerprint::make(nested(600)))->toThrow(MaximumDepthExceededException::class);
 });
 
 it('rejects a maximum depth below 1', function (int $depth) {
@@ -44,7 +44,7 @@ it('rejects a maximum depth below 1', function (int $depth) {
 
 it('makes every package exception a FingerprintException', function () {
     $classes = array_map(
-        fn (string $file) => 'Pharaonic\\Fingerprint\\Exceptions\\' . basename($file, '.php'),
+        fn(string $file) => 'Pharaonic\\Fingerprint\\Exceptions\\' . basename($file, '.php'),
         glob(dirname(__DIR__, 2) . '/src/Exceptions/*.php') ?: [],
     );
 

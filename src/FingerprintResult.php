@@ -24,8 +24,7 @@ final class FingerprintResult
         private string $version,
         private string $canonical,
         private mixed $normalized,
-    ) {
-    }
+    ) {}
 
     /**
      * The fingerprint, as make() returns it

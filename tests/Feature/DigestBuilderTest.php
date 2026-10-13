@@ -78,7 +78,7 @@ it('rejects values that are not readable streams', function (mixed $value) {
 
         return $stream;
     }],
-    'write-only stream' => [fn () => fopen('php://output', 'wb')],
+    'write-only stream' => [fn() => fopen('php://output', 'wb')],
 ]);
 
 it('keeps the secret out of debug output', function () {
@@ -86,7 +86,7 @@ it('keeps the secret out of debug output', function () {
 
     expect(print_r($builder, true))->not->toContain('file-secret-key')
         ->and($builder->__debugInfo())->toBe(['algorithm' => 'sha256', 'encoding' => 'hex', 'hmac' => true])
-        ->and(fn () => serialize($builder))->toThrow(LogicException::class);
+        ->and(fn() => serialize($builder))->toThrow(LogicException::class);
 });
 
 it('streams large files without loading them into memory', function () {

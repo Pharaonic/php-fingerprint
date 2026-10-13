@@ -32,9 +32,9 @@ function vectors(): array
  */
 function vectorNames(bool $unconfiguredOnly = false): array
 {
-    $names = array_keys(array_filter(vectors(), fn (array $vector) => ! $unconfiguredOnly || $vector[1] === null));
+    $names = array_keys(array_filter(vectors(), fn(array $vector) => ! $unconfiguredOnly || $vector[1] === null));
 
-    return array_combine($names, array_map(fn (string $name) => [$name], $names));
+    return array_combine($names, array_map(fn(string $name) => [$name], $names));
 }
 
 function canonical(mixed $value): string

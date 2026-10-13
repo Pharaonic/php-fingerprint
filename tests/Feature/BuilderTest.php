@@ -20,18 +20,18 @@ it('rebinds the configuration to another value without changing the original', f
 });
 
 $configurations = [
-    'ignore' => fn ($b) => $b->ignore('a'),
-    'only' => fn ($b) => $b->only(['a']),
-    'ignoreWhen' => fn ($b) => $b->ignoreWhen(fn ($path) => $path === 'a'),
-    'ignoreNulls' => fn ($b) => $b->ignoreNulls(),
-    'ignoreEmptyStrings' => fn ($b) => $b->ignoreEmptyStrings(),
-    'ignoreEmptyArrays' => fn ($b) => $b->ignoreEmptyArrays(),
-    'transform' => fn ($b) => $b->at('a')->transform(fn () => 'y'),
-    'unordered' => fn ($b) => $b->unordered(),
-    'sortBy' => fn ($b) => $b->sortBy('id'),
-    'sortUsing' => fn ($b) => $b->sortUsing(fn ($x, $y) => $y <=> $x),
-    'unique' => fn ($b) => $b->unique(),
-    'uniqueBy' => fn ($b) => $b->uniqueBy('id'),
+    'ignore' => fn($b) => $b->ignore('a'),
+    'only' => fn($b) => $b->only(['a']),
+    'ignoreWhen' => fn($b) => $b->ignoreWhen(fn($path) => $path === 'a'),
+    'ignoreNulls' => fn($b) => $b->ignoreNulls(),
+    'ignoreEmptyStrings' => fn($b) => $b->ignoreEmptyStrings(),
+    'ignoreEmptyArrays' => fn($b) => $b->ignoreEmptyArrays(),
+    'transform' => fn($b) => $b->at('a')->transform(fn() => 'y'),
+    'unordered' => fn($b) => $b->unordered(),
+    'sortBy' => fn($b) => $b->sortBy('id'),
+    'sortUsing' => fn($b) => $b->sortUsing(fn($x, $y) => $y <=> $x),
+    'unique' => fn($b) => $b->unique(),
+    'uniqueBy' => fn($b) => $b->uniqueBy('id'),
 ];
 
 it('never changes the builder a method is called on', function (string $method) use ($configurations) {
@@ -59,6 +59,6 @@ it('does not apply a scope to the builder it came from', function () {
     $base = Fingerprint::for(['a' => 1, 'b' => 2]);
     $scoped = $base->at('a');
 
-    expect($base->transform(fn () => 0)->make())->toBe(Fingerprint::make(0))
-        ->and($scoped->transform(fn () => 0)->make())->toBe(Fingerprint::make(['a' => 0, 'b' => 2]));
+    expect($base->transform(fn() => 0)->make())->toBe(Fingerprint::make(0))
+        ->and($scoped->transform(fn() => 0)->make())->toBe(Fingerprint::make(['a' => 0, 'b' => 2]));
 });

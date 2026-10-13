@@ -34,7 +34,7 @@ it('keeps list order significant', function (array $a, array $b) {
 
 it('preserves types', function () {
     $values = [1, '1', 1.0, true, 0, '0', 0.0, false, '', [], null];
-    $hashes = array_map(fn ($value) => Fingerprint::make($value), $values);
+    $hashes = array_map(fn($value) => Fingerprint::make($value), $values);
 
     expect(array_unique($hashes))->toHaveCount(count($values));
 });

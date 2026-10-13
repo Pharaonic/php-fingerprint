@@ -42,7 +42,7 @@ trait HasDigest
             throw new ConfigurationException('An HMAC secret cannot be empty.');
         }
 
-        // Never throw from here with a real secret: on PHP 8.0 this frame's arguments would show it
+        // Never throw from here with a real secret: on PHP 8.1 this frame's arguments would show it
         // in the exception trace. An algorithm that cannot do HMAC is reported when hashing instead.
         $builder = clone $this;
         $builder->digest = $this->digest->withSecret($secret);

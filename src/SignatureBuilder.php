@@ -170,9 +170,9 @@ final class SignatureBuilder
             [$found, $value] = self::lookup($this->payload, $path);
 
             if (! $found) {
-                $string = $this->resolve($this->onMissing, $field, static fn () => MissingFieldException::field($field));
+                $string = $this->resolve($this->onMissing, $field, static fn() => MissingFieldException::field($field));
             } elseif ($value === null) {
-                $string = $this->resolve($this->onNull, $field, static fn () => new UnsupportedValueException(sprintf(
+                $string = $this->resolve($this->onNull, $field, static fn() => new UnsupportedValueException(sprintf(
                     'The field "%s" is null; choose how to sign it with onNull().',
                     $field,
                 )));
@@ -208,7 +208,7 @@ final class SignatureBuilder
      */
     public function __debugInfo(): array
     {
-        return $this->digest->describe() + ['fields' => array_map(static fn (array $field): string => Path::format($field[1]), $this->fields)];
+        return $this->digest->describe() + ['fields' => array_map(static fn(array $field): string => Path::format($field[1]), $this->fields)];
     }
 
     /**

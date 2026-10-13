@@ -58,7 +58,7 @@ final class Digest
     }
 
     /**
-     * Never throws, so the secret cannot end up in an exception trace (PHP 8.0 has no
+     * Never throws, so the secret cannot end up in an exception trace (PHP 8.1 has no
      * #[SensitiveParameter]); hash() and the file and stream methods check the algorithm instead
      */
     public function withSecret(string $secret): self

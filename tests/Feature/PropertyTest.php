@@ -83,8 +83,8 @@ it('never depends on the order of only() paths', function (int $seed) {
 
     for ($i = 0; $i < 100; $i++) {
         $value = Gen::map(3);
-        $paths = array_map(fn ($key) => addcslashes((string) $key, '.*\\'), array_keys($value));
-        $paths = array_values(array_filter($paths, fn ($path) => $path !== ''));
+        $paths = array_map(fn($key) => addcslashes((string) $key, '.*\\'), array_keys($value));
+        $paths = array_values(array_filter($paths, fn($path) => $path !== ''));
         $paths[] = '*.*';
         $shuffled = $paths;
         shuffle($shuffled);
@@ -111,7 +111,7 @@ it('sorts shuffled items with unique keys into one result', function (int $seed)
     for ($i = 0; $i < 100; $i++) {
         $items = [];
 
-        foreach (array_unique(array_map(fn () => mt_rand(-50, 50), range(0, mt_rand(0, 8)))) as $id) {
+        foreach (array_unique(array_map(fn() => mt_rand(-50, 50), range(0, mt_rand(0, 8)))) as $id) {
             $items[] = ['id' => $id, 'payload' => Gen::value(2)];
         }
 

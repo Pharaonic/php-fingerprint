@@ -81,14 +81,14 @@ it('handles null fields as configured, apart from missing ones', function () use
 
 it('resolves missing and null fields with closures', function () use ($payload) {
     $signature = Fingerprint::signature($payload)->fields(['order.note', 'zzz', 'a'])->separator('|')
-        ->onNull(fn (string $field) => "<$field>")
-        ->onMissing(fn (string $field) => null);
+        ->onNull(fn(string $field) => "<$field>")
+        ->onMissing(fn(string $field) => null);
 
     expect($signature->message())->toBe('<order.note>|one');
 });
 
 it('rejects a strategy closure that returns something else than a string or null', function () use ($payload) {
-    Fingerprint::signature($payload)->fields(['zzz'])->onMissing(fn () => 1)->message();
+    Fingerprint::signature($payload)->fields(['zzz'])->onMissing(fn() => 1)->message();
 })->throws(ConfigurationException::class, 'A field strategy must return a string or null, int returned for "zzz".');
 
 it('turns values into strings', function () {
@@ -121,7 +121,7 @@ it('applies per-field rules without changing the order', function () {
         ->separator('|')
         ->at('email')->trim()->lower()
         ->at('currency')->upper()
-        ->at('items')->transform(fn (array $items) => implode('-', $items))
+        ->at('items')->transform(fn(array $items) => implode('-', $items))
         ->message();
 
     expect($message)->toBe('EGP|me@x.io|1-2');
@@ -130,7 +130,7 @@ it('applies per-field rules without changing the order', function () {
 it('reads stdClass, ArrayAccess and JsonSerializable payloads', function () {
     $json = json_decode('{"order":{"id":7,"amount":100}}');
     $access = new ArrayObject(['order' => new ArrayObject(['id' => 7, 'amount' => 100])]);
-    $serializable = new class () implements JsonSerializable {
+    $serializable = new class implements JsonSerializable {
         public function jsonSerialize(): mixed
         {
             return ['order' => ['id' => 7, 'amount' => 100]];
@@ -143,7 +143,7 @@ it('reads stdClass, ArrayAccess and JsonSerializable payloads', function () {
 });
 
 it('never reads private or protected properties', function () {
-    $payload = new class () {
+    $payload = new class {
         public string $visible = 'v';
 
         private string $hidden = 'h';
@@ -155,7 +155,7 @@ it('never reads private or protected properties', function () {
     };
 
     expect(Fingerprint::signature($payload)->fields(['visible'])->message())->toBe('v')
-        ->and(fn () => Fingerprint::signature($payload)->fields(['hidden'])->message())->toThrow(MissingFieldException::class);
+        ->and(fn() => Fingerprint::signature($payload)->fields(['hidden'])->message())->toThrow(MissingFieldException::class);
 });
 
 it('hashes and signs the message', function () use ($payload) {
@@ -186,7 +186,7 @@ it('keeps the secret out of debug output and refuses serialization', function ()
 
     expect(print_r($signature, true))->not->toContain('top-secret-key')
         ->and($signature->__debugInfo())->toBe(['algorithm' => 'sha256', 'encoding' => 'hex', 'hmac' => true, 'fields' => ['a']])
-        ->and(fn () => serialize($signature))->toThrow(LogicException::class);
+        ->and(fn() => serialize($signature))->toThrow(LogicException::class);
 });
 
 it('never changes the builder a method is called on', function () use ($payload) {
@@ -200,17 +200,17 @@ it('never changes the builder a method is called on', function () use ($payload)
 });
 
 $invalid = [
-    'no fields' => [fn ($s) => $s->message(), 'A signature needs at least one field: call fields().'],
-    'empty fields' => [fn ($s) => $s->fields([])->message(), 'A signature needs at least one field: call fields().'],
-    'wildcard field' => [fn ($s) => $s->fields(['items.*.id']), 'fields() paths cannot contain wildcards, "items.*.id" given.'],
-    'non-string field' => [fn ($s) => $s->fields([1]), 'fields() paths must be strings, int given.'],
-    'invalid path' => [fn ($s) => $s->fields(['a..b']), 'The path "a..b" has an empty segment.'],
-    'function name as a strategy' => [fn ($s) => $s->onMissing('trim'), 'onMissing() accepts "throw", "empty", "null", "skip" or a closure, "trim" given.'],
-    'unknown null strategy' => [fn ($s) => $s->onNull('zero'), 'onNull() accepts "throw", "empty", "null", "skip" or a closure, "zero" given.'],
+    'no fields' => [fn($s) => $s->message(), 'A signature needs at least one field: call fields().'],
+    'empty fields' => [fn($s) => $s->fields([])->message(), 'A signature needs at least one field: call fields().'],
+    'wildcard field' => [fn($s) => $s->fields(['items.*.id']), 'fields() paths cannot contain wildcards, "items.*.id" given.'],
+    'non-string field' => [fn($s) => $s->fields([1]), 'fields() paths must be strings, int given.'],
+    'invalid path' => [fn($s) => $s->fields(['a..b']), 'The path "a..b" has an empty segment.'],
+    'function name as a strategy' => [fn($s) => $s->onMissing('trim'), 'onMissing() accepts "throw", "empty", "null", "skip" or a closure, "trim" given.'],
+    'unknown null strategy' => [fn($s) => $s->onNull('zero'), 'onNull() accepts "throw", "empty", "null", "skip" or a closure, "zero" given.'],
 ];
 
 it('rejects invalid signature configurations', function (string $case) use ($invalid, $payload) {
     [$configure, $message] = $invalid[$case];
 
-    expect(fn () => $configure(Fingerprint::signature($payload)))->toThrow(ConfigurationException::class, $message);
+    expect(fn() => $configure(Fingerprint::signature($payload)))->toThrow(ConfigurationException::class, $message);
 })->with(array_keys($invalid));

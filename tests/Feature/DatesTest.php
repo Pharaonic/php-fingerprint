@@ -18,7 +18,7 @@ it('keeps microseconds by default', function () {
 });
 
 it('truncates dates to a unit', function (string $unit, string $a, string $b, bool $equal) {
-    $hash = fn (string $date) => Fingerprint::for(new DateTimeImmutable($date))->datePrecision($unit)->make();
+    $hash = fn(string $date) => Fingerprint::for(new DateTimeImmutable($date))->datePrecision($unit)->make();
 
     expect($hash($a) === $hash($b))->toBe($equal);
 })->with([

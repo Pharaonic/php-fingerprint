@@ -9,6 +9,4 @@ use Throwable;
 /**
  * Implemented by every exception this package throws, so callers can catch them all at once.
  */
-interface FingerprintException extends Throwable
-{
-}
+interface FingerprintException extends Throwable {}

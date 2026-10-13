@@ -26,11 +26,11 @@ it('keeps the secret out of exception messages', function () use ($secret) {
     $messages = [];
 
     foreach ([
-        fn () => Fingerprint::for(NAN)->hmac($secret)->make(),
-        fn () => Fingerprint::for(1)->hmac($secret)->algorithm('crc32b'),
-        fn () => Fingerprint::for(1)->algorithm('crc32b')->hmac($secret)->make(),
-        fn () => Fingerprint::for(1)->hmac($secret)->algorithm('nope'),
-        fn () => Fingerprint::for([1])->hmac($secret)->ignoreWhen(fn () => 1)->make(),
+        fn() => Fingerprint::for(NAN)->hmac($secret)->make(),
+        fn() => Fingerprint::for(1)->hmac($secret)->algorithm('crc32b'),
+        fn() => Fingerprint::for(1)->algorithm('crc32b')->hmac($secret)->make(),
+        fn() => Fingerprint::for(1)->hmac($secret)->algorithm('nope'),
+        fn() => Fingerprint::for([1])->hmac($secret)->ignoreWhen(fn() => 1)->make(),
     ] as $failing) {
         try {
             $failing();
@@ -50,12 +50,12 @@ it('keeps the secret out of exception traces, even with arguments recorded', fun
 
     try {
         foreach ([
-            fn () => Fingerprint::for(1)->algorithm('crc32b')->hmac($secret)->make(),
-            fn () => Fingerprint::file(__FILE__)->algorithm('joaat')->hmac($secret)->verify('x'),
-            fn () => Fingerprint::for(1)->hmac($secret)->algorithm('fnv1a64'),
-            fn () => Fingerprint::for(new DateTimeZone('UTC'))->hmac($secret)->make(),
-            fn () => Fingerprint::signature([])->fields(['missing'])->hmac($secret)->make(),
-            fn () => Fingerprint::file('/missing/file')->hmac($secret)->make(),
+            fn() => Fingerprint::for(1)->algorithm('crc32b')->hmac($secret)->make(),
+            fn() => Fingerprint::file(__FILE__)->algorithm('joaat')->hmac($secret)->verify('x'),
+            fn() => Fingerprint::for(1)->hmac($secret)->algorithm('fnv1a64'),
+            fn() => Fingerprint::for(new DateTimeZone('UTC'))->hmac($secret)->make(),
+            fn() => Fingerprint::signature([])->fields(['missing'])->hmac($secret)->make(),
+            fn() => Fingerprint::file('/missing/file')->hmac($secret)->make(),
         ] as $failing) {
             try {
                 $failing();
@@ -63,7 +63,7 @@ it('keeps the secret out of exception traces, even with arguments recorded', fun
                 // Only the package's frames: the test runner's frames hold this test's own closures.
                 $frames = array_filter(
                     $exception->getTrace(),
-                    fn (array $frame) => str_starts_with($frame['class'] ?? '', 'Pharaonic\\Fingerprint\\')
+                    fn(array $frame) => str_starts_with($frame['class'] ?? '', 'Pharaonic\\Fingerprint\\')
                         && ! str_starts_with($frame['class'] ?? '', 'Pharaonic\\Fingerprint\\Tests\\'),
                 );
 

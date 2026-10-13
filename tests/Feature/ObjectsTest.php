@@ -10,9 +10,7 @@ use Pharaonic\Fingerprint\Fingerprint;
 function jsonOf(mixed $value): JsonSerializable
 {
     return new class ($value) implements JsonSerializable {
-        public function __construct(public mixed $value)
-        {
-        }
+        public function __construct(public mixed $value) {}
 
         public function jsonSerialize(): mixed
         {
@@ -36,7 +34,7 @@ it('uses what JsonSerializable returns, recursively', function () {
 });
 
 it('iterates Traversable objects', function () {
-    $aggregate = new class () implements IteratorAggregate {
+    $aggregate = new class implements IteratorAggregate {
         public function getIterator(): Iterator
         {
             return new ArrayIterator(['b' => 2, 'a' => 1]);
@@ -56,7 +54,7 @@ it('rejects generators', function () {
 })->throws(UnsupportedValueException::class, 'A generator cannot be fingerprinted at path "g".');
 
 it('rejects iterators that repeat a key', function () {
-    $iterator = new class () implements Iterator {
+    $iterator = new class implements Iterator {
         private int $i = 0;
 
         public function current(): mixed
@@ -111,7 +109,7 @@ it('accepts the same object twice when it does not contain itself', function () 
 
 it('converts objects with a normalize() callback', function () {
     $hash = Fingerprint::for(['money' => new ArrayObject(['amount' => 100, 'currency' => 'EGP'])])
-        ->normalize(ArrayObject::class, fn (ArrayObject $money) => $money['amount'] . ' ' . $money['currency'])
+        ->normalize(ArrayObject::class, fn(ArrayObject $money) => $money['amount'] . ' ' . $money['currency'])
         ->make();
 
     expect($hash)->toBe(Fingerprint::make(['money' => '100 EGP']));
@@ -120,43 +118,43 @@ it('converts objects with a normalize() callback', function () {
 it('prefers an exact class, then the first matching type in declaration order', function () {
     $value = new ArrayIterator([]);
 
-    $hash = fn ($builder) => $builder->make();
+    $hash = fn($builder) => $builder->make();
     $builder = Fingerprint::for($value)
-        ->normalize(Traversable::class, fn () => 'traversable')
-        ->normalize(Countable::class, fn () => 'countable');
+        ->normalize(Traversable::class, fn() => 'traversable')
+        ->normalize(Countable::class, fn() => 'countable');
 
     expect($hash($builder))->toBe(Fingerprint::make('traversable'))
-        ->and($hash($builder->normalize(ArrayIterator::class, fn () => 'exact')))->toBe(Fingerprint::make('exact'));
+        ->and($hash($builder->normalize(ArrayIterator::class, fn() => 'exact')))->toBe(Fingerprint::make('exact'));
 });
 
 it('opts Stringable objects in through normalize()', function () {
-    $stringable = new class () {
+    $stringable = new class {
         public function __toString(): string
         {
             return 'hello';
         }
     };
 
-    expect(fn () => Fingerprint::make($stringable))->toThrow(UnsupportedValueException::class)
-        ->and(Fingerprint::for($stringable)->normalize(Stringable::class, fn ($value) => (string) $value)->make())
+    expect(fn() => Fingerprint::make($stringable))->toThrow(UnsupportedValueException::class)
+        ->and(Fingerprint::for($stringable)->normalize(Stringable::class, fn($value) => (string) $value)->make())
         ->toBe(Fingerprint::make('hello'));
 });
 
 it('applies normalize() everywhere whatever the scope', function () {
     $hash = Fingerprint::for(['a' => new DateTimeZone('UTC')])
         ->at('b')
-        ->normalize(DateTimeZone::class, fn (DateTimeZone $zone) => $zone->getName())
+        ->normalize(DateTimeZone::class, fn(DateTimeZone $zone) => $zone->getName())
         ->make();
 
     expect($hash)->toBe(Fingerprint::make(['a' => 'UTC']));
 });
 
 it('detects a normalize() callback that returns its own input', function () {
-    Fingerprint::for(new DateTimeZone('UTC'))->normalize(DateTimeZone::class, fn ($zone) => $zone)->make();
+    Fingerprint::for(new DateTimeZone('UTC'))->normalize(DateTimeZone::class, fn($zone) => $zone)->make();
 })->throws(CircularReferenceException::class);
 
 it('rejects normalize() for a class that does not exist', function () {
-    Fingerprint::for(null)->normalize('Missing\\Money', fn () => null);
+    Fingerprint::for(null)->normalize('Missing\\Money', fn() => null);
 })->throws(ConfigurationException::class, 'normalize() needs an existing class or interface, "Missing\\Money" given.');
 
 it('gives callbacks a stdClass as its array of properties', function () {
@@ -176,13 +174,13 @@ it('gives callbacks a stdClass as its array of properties', function () {
 });
 
 it('normalizes objects returned by a transform', function () {
-    expect(Fingerprint::for(['x' => 'x'])->at('x')->transform(fn () => (object) ['a' => 1])->make())
+    expect(Fingerprint::for(['x' => 'x'])->at('x')->transform(fn() => (object) ['a' => 1])->make())
         ->toBe(Fingerprint::make(['x' => ['a' => 1]]));
 });
 
 it('does not mistake a new object for an active one that was freed', function () {
     $hash = Fingerprint::for(['x' => 1, 'y' => 2])
-        ->at('*')->transform(fn ($value) => jsonOf(jsonOf((object) ['v' => $value])))
+        ->at('*')->transform(fn($value) => jsonOf(jsonOf((object) ['v' => $value])))
         ->make();
 
     expect($hash)->toBe(Fingerprint::make(['x' => ['v' => 1], 'y' => ['v' => 2]]));

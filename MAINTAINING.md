@@ -8,7 +8,7 @@ Deterministic fingerprints of structured PHP data (canonical mode) and ordered p
 
 ## Supported PHP lines
 
-One branch per PHP minor, each requiring exactly that minor (`"php": ">=8.0 <8.1"`):
+One branch per PHP minor, each requiring exactly that minor (`"php": ">=8.1 <8.2"`):
 
 ```text
 8.0.x  8.1.x  8.2.x  8.3.x  8.4.x  8.5.x
@@ -30,7 +30,7 @@ One branch per PHP minor, each requiring exactly that minor (`"php": ">=8.0 <8.1
 
 ## Security notes
 
-- PHP 8.0 has no `#[SensitiveParameter]`, so no exception may be thrown while a frame holds the HMAC secret as an argument: `hmac()` only rejects an empty secret, and the HMAC-algorithm check runs when hashing. `SecretsTest` checks the package's frames with `zend.exception_ignore_args` off. Lines from 8.2 can add `#[SensitiveParameter]` on top.
+- PHP 8.1 has no `#[SensitiveParameter]`, so no exception may be thrown while a frame holds the HMAC secret as an argument: `hmac()` only rejects an empty secret, and the HMAC-algorithm check runs when hashing. `SecretsTest` checks the package's frames with `zend.exception_ignore_args` off. Lines from 8.2 can add `#[SensitiveParameter]` on top.
 - The secret is hidden from `var_dump()`/`print_r()` through `__debugInfo()` and builders refuse `serialize()`, but `var_export()`, `(array)` casts and Reflection can still read private properties; that cannot be prevented in PHP.
 - `Fingerprint::file()` reads any path PHP's stat functions accept, stream wrappers included: paths must come from trusted code. PHP 8.0 no longer unserializes Phar metadata on file access.
 - Callbacks (`transform()`, `normalize()`, `sortUsing()`, `ignoreWhen()`, signature strategies) and user objects (`JsonSerializable`, `Traversable`, `ArrayAccess`) run application code and are trusted.

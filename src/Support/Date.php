@@ -14,6 +14,5 @@ final class Date
     public function __construct(
         public string $time,
         public ?string $zone = null,
-    ) {
-    }
+    ) {}
 }
