@@ -2,6 +2,13 @@
 
 All notable changes to this project are documented in this file.
 
+## 8.2.0 - Unreleased
+
+### Changed
+
+- Requires PHP 8.2. Every value that 8.0.x and 8.1.x accept keeps its fingerprint.
+- The HMAC secret is marked with `#[\SensitiveParameter]`, so PHP replaces it with a `SensitiveParameterValue` in every stack trace that records arguments.
+
 ## 8.1.0 - 2026-10-13
 
 ### Added
