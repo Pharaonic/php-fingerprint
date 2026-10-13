@@ -9,10 +9,10 @@ namespace Pharaonic\Fingerprint\Support;
  *
  * @internal
  */
-final class Date
+final readonly class Date
 {
     public function __construct(
-        public readonly string $time,
-        public readonly ?string $zone = null,
+        public string $time,
+        public ?string $zone = null,
     ) {}
 }

@@ -12,12 +12,12 @@ namespace Pharaonic\Fingerprint\Support;
  *
  * @internal
  */
-final class ListUnique
+final readonly class ListUnique
 {
     /**
      * @param non-empty-list<string>|null $field
      */
-    public function __construct(private readonly ?array $field = null) {}
+    public function __construct(private ?array $field = null) {}
 
     /**
      * @param list<mixed> $items

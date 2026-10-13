@@ -10,20 +10,20 @@ namespace Pharaonic\Fingerprint;
  * Compare canonical() of two results to see why their fingerprints differ. A result never
  * holds the HMAC secret.
  */
-final class FingerprintResult
+final readonly class FingerprintResult
 {
     /**
      * @internal Use FingerprintBuilder::result().
      */
     public function __construct(
-        private readonly string $hash,
-        private readonly string $algorithm,
-        private readonly string $encoding,
-        private readonly bool $hmac,
-        private readonly ?string $namespace,
-        private readonly string $version,
-        private readonly string $canonical,
-        private readonly mixed $normalized,
+        private string $hash,
+        private string $algorithm,
+        private string $encoding,
+        private bool $hmac,
+        private ?string $namespace,
+        private string $version,
+        private string $canonical,
+        private mixed $normalized,
     ) {}
 
     /**

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Pharaonic\Fingerprint\Support;
 
+use Closure;
 use Pharaonic\Fingerprint\Exceptions\ConfigurationException;
 
 /**
@@ -15,19 +16,13 @@ use Pharaonic\Fingerprint\Exceptions\ConfigurationException;
  *
  * @internal
  */
-final class ListOrder
+final readonly class ListOrder
 {
-    /** @var callable(mixed, mixed): mixed|null */
-    private $comparator;
-
     /**
      * @param list<array{non-empty-list<string>, bool}> $fields Field paths, and whether each is descending.
-     * @param (callable(mixed, mixed): mixed)|null $comparator
+     * @param (Closure(mixed, mixed): mixed)|null $comparator
      */
-    private function __construct(private readonly array $fields = [], ?callable $comparator = null)
-    {
-        $this->comparator = $comparator;
-    }
+    private function __construct(private array $fields = [], private ?Closure $comparator = null) {}
 
     public static function unordered(): self
     {
@@ -47,7 +42,7 @@ final class ListOrder
      */
     public static function using(callable $comparator): self
     {
-        return new self([], $comparator);
+        return new self([], $comparator(...));
     }
 
     /**
