@@ -30,6 +30,16 @@ Fingerprint::make([1, 2]) === Fingerprint::make([2, 1]); // false
 Fingerprint::make(['id' => 7]) === Fingerprint::make(['id' => '7']); // false
 ```
 
+An enum case is a type of its own. `Status::Paid` matches neither `'paid'` nor `'Paid'`, and cases of two different enums never match, even when they have the same backed value:
+
+```php
+enum Status: string { case Pending = 'pending'; case Paid = 'paid'; }
+enum PaymentState: string { case Paid = 'paid'; }
+
+Fingerprint::make(['status' => Status::Paid]) === Fingerprint::make(['status' => 'paid']); // false
+Fingerprint::make(Status::Paid) === Fingerprint::make(PaymentState::Paid);                 // false
+```
+
 [Normalization](#normalization) shows how to treat some of them as equal.
 
 ### Null Is Not a Missing Key

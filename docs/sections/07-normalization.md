@@ -1,6 +1,6 @@
 ## Normalization
 
-Read this when equal-looking data should match: extra spaces, upper and lower case, rounding, numbers stored as strings, or dates in different timezones.
+Read this when equal-looking data should match: extra spaces, upper and lower case, rounding, numbers stored as strings, enum cases stored as values, or dates in different timezones.
 
 Value rules turn equivalent values into the same value before hashing. Each applies to every value of its type, or only at a path after [`at()`](#paths). The page goes from the most common rules to the most flexible one, `transform()`.
 
@@ -53,6 +53,44 @@ Only an optional minus sign, digits without leading zeros, an optional fraction 
 Fingerprint::for([1, '1', 'true', 0, 'false', 'yes'])->normalizeBooleans()->result()->normalized();
 // [true, true, true, false, false, 'yes']
 ```
+
+### Enums
+
+An enum case is fingerprinted as its enum class, its case name and, for a backed enum, its value. Two rules use a plain value instead, so a case can match data that stores the value or the name. The examples use these enums:
+
+```php
+enum Status: string { case Pending = 'pending'; case Paid = 'paid'; }
+enum Suit { case Hearts; case Spades; }
+```
+
+| Rule | `Status::Paid` becomes |
+| --- | --- |
+| `enumsByValue()` | `'paid'`, its backed value (an `int` for int-backed enums) |
+| `enumsByName()` | `'Paid'`, its case name |
+
+```php
+Fingerprint::for(['status' => Status::Paid])->enumsByValue()->make()
+    === Fingerprint::make(['status' => 'paid']); // true
+```
+
+Like every value rule, they can be scoped with `at()`, and the last one declared for a path wins:
+
+```php
+Fingerprint::for(['status' => Status::Paid, 'suit' => Suit::Hearts])
+    ->at('status')->enumsByValue()
+    ->at('suit')->enumsByName()
+    ->result()->normalized();
+// ['status' => 'paid', 'suit' => 'Hearts']
+```
+
+The string and number rules then apply to the result, so `->enumsByName()->lower()` gives `'paid'`. A case of an enum without backed values has nothing for `enumsByValue()` to use:
+
+```php
+Fingerprint::for(['suit' => Suit::Hearts])->enumsByValue()->make();
+// UnsupportedValueException: The enum case Suit::Hearts has no backed value for enumsByValue() at path "suit".
+```
+
+A `normalize()` callback for the enum class takes precedence over both rules, as for any object ([Objects](#objects)).
 
 ### Dates
 

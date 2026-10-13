@@ -13,15 +13,21 @@ Fingerprint::for($data)->algorithm('sha512')->make();
 Fingerprint::for($data)->algorithm('crc32b')->make(); // "a543c5c7" for ['a' => 1]
 ```
 
-An algorithm PHP doesn't have throws a `ConfigurationException` instead of falling back. On PHP 8.0, that includes `xxh32`, `xxh64`, `xxh3`, `xxh128` and `murmur3*`, which arrived in PHP 8.1:
+The fast `xxh32`, `xxh64`, `xxh3`, `xxh128`, `murmur3a`, `murmur3c` and `murmur3f` algorithms are available too:
 
 ```php
-Fingerprint::for($data)->algorithm('xxh128');
-// ConfigurationException: The hash algorithm "xxh128" is not available on PHP 8.0.30.
+Fingerprint::for(['a' => 1])->algorithm('xxh128')->make(); // "9f013320af9f365ab723e99883d27b08"
+```
+
+An algorithm PHP doesn't have throws a `ConfigurationException` instead of falling back:
+
+```php
+Fingerprint::for($data)->algorithm('sha257');
+// ConfigurationException: The hash algorithm "sha257" is not available on PHP 8.1.34.
 ```
 
 :::warning Non-cryptographic algorithms
-`crc32b`, `fnv1a64`, `md5` and similar algorithms are fine for change detection and cache keys, but anyone can produce a collision. Use SHA-256 or stronger, with `hmac()` (below), when the fingerprint protects anything.
+`xxh*`, `murmur3*`, `crc32b`, `fnv1a64`, `md5` and similar algorithms are fine for change detection and cache keys, but anyone can produce a collision. Use SHA-256 or stronger, with `hmac()` (below), when the fingerprint protects anything. `xxh*`, `murmur3*` and the checksums can't be used with `hmac()` at all.
 :::
 
 ### Output Encodings

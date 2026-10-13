@@ -32,16 +32,17 @@ Rules always run in the same order, whatever order you declare them in, so `->lo
 1. objects become plain data ([Objects](#objects));
 2. `ignoreWhen()` callbacks, which see the value before any value rule;
 3. `transform()`, whose result is converted again;
-4. string rules: `trim()`, `normalizeWhitespace()`, `unicode()`, then `lower()` or `upper()`;
-5. `normalizeNumericStrings()`, then `precision()`;
-6. `normalizeBooleans()`;
-7. date rules: `datePrecision()` and `keepTimezone()`;
-8. the value's children;
-9. list rules: ordering, then de-duplication.
+4. `enumsByName()` or `enumsByValue()`;
+5. string rules: `trim()`, `normalizeWhitespace()`, `unicode()`, then `lower()` or `upper()`;
+6. `normalizeNumericStrings()`, then `precision()`;
+7. `normalizeBooleans()`;
+8. date rules: `datePrecision()` and `keepTimezone()`;
+9. the value's children;
+10. list rules: ordering, then de-duplication.
 
 `ignoreNulls()`, `ignoreEmptyStrings()` and `ignoreEmptyArrays()` check each value after its rules apply.
 
-Because a list's rules run after its children (8 and 9 above), you can clean each element and then order the list:
+Because a list's rules run after its children (9 and 10 above), you can clean each element and then order the list:
 
 ```php
 Fingerprint::for($contact)

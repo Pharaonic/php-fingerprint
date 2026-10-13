@@ -7,10 +7,11 @@ Objects are converted into plain data, in this order:
 1. closures and generators are rejected;
 2. a `normalize()` callback for the object's class or one of its types;
 3. `DateTimeInterface` stays a date (see [Dates](#normalization));
-4. `JsonSerializable` uses what `jsonSerialize()` returns;
-5. `Traversable` (`ArrayObject`, `ArrayIterator`, `IteratorAggregate`…) is iterated;
-6. `stdClass` becomes a map, even when empty or numerically keyed;
-7. anything else throws an `UnsupportedValueException`.
+4. an enum case stays an enum case, even when its enum implements `JsonSerializable` (see [Enums](#normalization));
+5. `JsonSerializable` uses what `jsonSerialize()` returns;
+6. `Traversable` (`ArrayObject`, `ArrayIterator`, `IteratorAggregate`…) is iterated;
+7. `stdClass` becomes a map, even when empty or numerically keyed;
+8. anything else throws an `UnsupportedValueException`.
 
 Private and protected properties are never read. What a conversion returns is converted again, so a `JsonSerializable` may return another one.
 

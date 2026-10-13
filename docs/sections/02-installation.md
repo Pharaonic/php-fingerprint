@@ -21,3 +21,7 @@ Composer autoloads the `Pharaonic\Fingerprint` namespace.
 :::success Installation Complete
 You're all set! Try `Pharaonic\Fingerprint\Fingerprint::make(['id' => 7])`, which returns a 64-character SHA-256 hex string.
 :::
+
+### Upgrading from 8.0.x
+
+Require PHP 8.1 and update the package. Nothing else changes: no method was removed or changed, and every value 8.0.x accepts keeps its fingerprint, so stored fingerprints still match. New in 8.1.x are enum support ([Enums](#normalization)) and the `xxh*` and `murmur3*` algorithms ([Hashing & HMAC](#hashing)).

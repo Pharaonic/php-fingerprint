@@ -19,6 +19,7 @@ One branch per PHP minor, each requiring exactly that minor (`"php": ">=8.1 <8.2
 - Canonical mode and signature mode are separate pipelines and must stay separate.
 - Associative key order never affects a canonical fingerprint, lists keep their order by default, types are preserved, and `null` differs from a missing key.
 - **Canonical format v1 is shared by every line.** `tests/Fixtures/vectors.php` holds hand-written golden vectors; every line must reproduce them byte for byte. Changing an existing vector is a canonical-format change and needs a new format version. Lines may only add vectors.
+- Enum cases are encoded as `e` + class + case name + backed value (`n` when pure); their vectors start on `8.1.x`. `enumsByName()`/`enumsByValue()` are never the default, and signatures sign only backed values unless a rule says otherwise.
 - The canonical form never depends on ini settings, the locale or the PHP version: floats are encoded from their IEEE-754 bits, map keys are ordered with `strcmp()`, and `round()` (which changed in PHP 8.4) is never used.
 - Every exception implements `Exceptions\FingerprintException`. Everything under `Support\` is `@internal`.
 

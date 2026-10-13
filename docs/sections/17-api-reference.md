@@ -27,6 +27,7 @@ All classes live in the `Pharaonic\Fingerprint` namespace. Builders are immutabl
 | `normalize(string $class, callable $normalizer)` | Converts objects of a class or interface |
 | `at(string $path)` | Scopes the following value rules to a path |
 | `transform(callable $callback)` | Replaces values with `fn (mixed $value, string $path): mixed` |
+| `enumsByName()` / `enumsByValue()` | Uses an enum case's name or backed value instead of the case |
 | `trim()` | Trims ASCII whitespace from strings |
 | `normalizeWhitespace()` | Collapses ASCII whitespace runs in strings |
 | `lower()` / `upper()` | Changes the case of strings (UTF-8) |
@@ -60,7 +61,7 @@ All classes live in the `Pharaonic\Fingerprint` namespace. Builders are immutabl
 | `keyValueSeparator(string $separator)` | Between a key and its value (`'='`) |
 | `onMissing(string\|Closure $strategy)` | `'throw'` (default), `'empty'`, `'null'`, `'skip'` or a closure |
 | `onNull(string\|Closure $strategy)` | The same choices, for null values |
-| `at()`, `transform()`, `trim()`, `normalizeWhitespace()`, `lower()`, `upper()`, `unicode()`, `precision()` | Value rules per field, as on `FingerprintBuilder` |
+| `at()`, `transform()`, `enumsByName()`, `enumsByValue()`, `trim()`, `normalizeWhitespace()`, `lower()`, `upper()`, `unicode()`, `precision()` | Value rules per field, as on `FingerprintBuilder` |
 | `algorithm()`, `hmac()`, `hex()`, `binary()`, `base64()`, `base64Url()` | Hashing options |
 | `message(): string` | The exact string that is signed |
 | `make(): string` | The signature |

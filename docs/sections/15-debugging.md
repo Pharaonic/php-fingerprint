@@ -36,5 +36,6 @@ A result never holds the HMAC secret, so it is safe to log.
 | `m2{…}` | a map of 2 entries, keys in canonical order |
 | `t2026-10-12T07:00:00.000000Z` | a date, as its UTC instant |
 | `z39:2026-10-12T10:00:00.000000 Africa/Cairo` | a date with `keepTimezone()` |
+| `es6:Statuss4:Paids4:paid` | an enum case: its class, its case name, then its backed value (`n` when it has none) |
 
 For a signature, `message()` plays the same role: it returns the exact string that is hashed or signed.

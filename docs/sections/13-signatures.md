@@ -65,6 +65,8 @@ A string key in `fields()`, like `'amount' => 'order.amount'` above, renames the
 | int | decimal: `1050` |
 | bool | `true` or `false` |
 | float | needs `precision()` on its field: `10.50` |
+| backed enum case | its backed value: `Status::Paid` gives `paid` |
+| enum case without a backed value | needs `enumsByName()` or a `transform()` |
 | array, object, date | needs a `transform()` that returns one of the types above |
 
 ```php
@@ -75,7 +77,20 @@ Fingerprint::signature(['total' => 10.5])
 // "10.50"
 ```
 
-A float without `precision()` throws an `UnsupportedValueException`, because PHP 8.0 turns floats into text differently depending on the `precision` ini setting. Use `at()` to apply `trim()`, `normalizeWhitespace()`, `lower()`, `upper()`, `unicode()`, `precision()` and `transform()` to one field.
+A float without `precision()` throws an `UnsupportedValueException`, because PHP turns floats into text differently depending on the `precision` ini setting. So does an enum case without a backed value, because only its case name could stand for it, and a protocol should not depend on PHP case names by accident:
+
+```php
+Fingerprint::signature(['id' => 7, 'status' => Status::Paid])->fields(['id', 'status'])->separator('|')->message();
+// "7|paid"
+
+Fingerprint::signature(['suit' => Suit::Hearts])->fields(['suit'])->message();
+// UnsupportedValueException: The field "suit" holds Suit; use enumsByName() or transform().
+
+Fingerprint::signature(['suit' => Suit::Hearts])->fields(['suit'])->enumsByName()->message();
+// "Hearts"
+```
+
+Use `at()` to apply `trim()`, `normalizeWhitespace()`, `lower()`, `upper()`, `unicode()`, `precision()`, `enumsByName()`, `enumsByValue()` and `transform()` to one field.
 
 ### Missing and Null Fields
 

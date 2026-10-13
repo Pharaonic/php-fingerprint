@@ -20,7 +20,7 @@ The canonical form starts with a version header (`fp1;`). If the format ever has
 
 ### Limitations
 
-- **Hash algorithms:** only the algorithms of your PHP build are available. PHP 8.0 has no `xxh*` or `murmur3*`.
+- **Hash algorithms:** only the algorithms of your PHP build are available.
 - **Unicode tables:** `lower()`, `upper()` and `unicode()` use the Unicode tables of mbstring and ICU. Characters added in recent Unicode versions can be handled differently by older PHP or ICU builds, so avoid relying on them when fingerprints must match across servers.
 - **Named timezones:** dates built from named zones depend on each PHP build's timezone database. See [Dates](#normalization).
 - **Numeric string keys:** PHP casts the key `'1'` to `1` before the package sees it, so the two can't be told apart.

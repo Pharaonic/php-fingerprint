@@ -2,6 +2,19 @@
 
 All notable changes to this project are documented in this file.
 
+## 8.1.0 - Unreleased
+
+### Added
+
+- Enum cases can be fingerprinted. A case is encoded with its enum class, its case name and its backed value, so it never matches its name or its value, and cases of different enums never match, even with equal backed values. Lists of cases can be ordered and de-duplicated, and a `normalize()` callback for an enum class still takes precedence.
+- `enumsByName()` and `enumsByValue()` use a case's name or backed value instead, on every value or at a path with `at()`. `enumsByValue()` throws an `UnsupportedValueException` for a case without a backed value.
+- Ordered signatures sign the backed value of an enum case. A case without a backed value throws unless `enumsByName()` or `transform()` handles it.
+- The `xxh32`, `xxh64`, `xxh3`, `xxh128` and `murmur3*` algorithms of PHP 8.1 work with `algorithm()`. Like the checksums, they are non-cryptographic and cannot be used with `hmac()`.
+
+### Changed
+
+- Requires PHP 8.1. Every value that 8.0.x accepts keeps its fingerprint.
+
 ## 8.0.3 - 2026-10-13
 
 ### Changed

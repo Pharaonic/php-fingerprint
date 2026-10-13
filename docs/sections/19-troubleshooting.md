@@ -37,7 +37,7 @@ The value nests deeper than 512 levels, or an array references itself. Fix the r
 
 ### ConfigurationException: algorithm not available
 
-Your PHP build doesn't have that algorithm. PHP 8.0 has no `xxh*` or `murmur3*`. List what's available with `hash_algos()`.
+Your PHP build doesn't have that algorithm. List what's available with `hash_algos()`.
 
 ### ConfigurationException: cannot be used for HMAC
 
