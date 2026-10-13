@@ -30,13 +30,13 @@
     "security": "https://github.com/Pharaonic/php-fingerprint/security/policy"
   },
   "require": {
-    "php": ">=8.4 <8.5",
+    "php": ">=8.5 <8.6",
     "ext-mbstring": "*"
   },
   "require-dev": {
     "laravel/pint": "^1.20",
     "pestphp/pest": "^4.0",
-    "phpstan/phpstan": "^2.1"
+    "phpstan/phpstan": "^2.1.33"
   },
   "suggest": {
     "ext-intl": "Required only for unicode() rules, unless symfony/polyfill-intl-normalizer is installed."
