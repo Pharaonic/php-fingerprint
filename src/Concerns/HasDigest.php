@@ -6,6 +6,7 @@ namespace Pharaonic\Fingerprint\Concerns;
 
 use Pharaonic\Fingerprint\Exceptions\ConfigurationException;
 use Pharaonic\Fingerprint\Support\Digest;
+use SensitiveParameter;
 
 /**
  * Algorithm, HMAC and output encoding options shared by every builder
@@ -33,17 +34,16 @@ trait HasDigest
     /**
      * Sign with an HMAC secret instead of a plain hash
      *
-     * The secret never appears in var_dump(), print_r() or exception messages, and the builder
-     * cannot be serialized.
+     * The secret never appears in var_dump(), print_r(), exception messages or exception traces,
+     * and the builder cannot be serialized.
      */
-    public function hmac(string $secret): self
+    public function hmac(#[SensitiveParameter] string $secret): self
     {
         if ($secret === '') {
             throw new ConfigurationException('An HMAC secret cannot be empty.');
         }
 
-        // Never throw from here with a real secret: on PHP 8.1 this frame's arguments would show it
-        // in the exception trace. An algorithm that cannot do HMAC is reported when hashing instead.
+        // An algorithm that cannot do HMAC is reported when hashing, not here.
         $builder = clone $this;
         $builder->digest = $this->digest->withSecret($secret);
 

@@ -7,6 +7,7 @@ namespace Pharaonic\Fingerprint\Support;
 use LogicException;
 use Pharaonic\Fingerprint\Exceptions\ConfigurationException;
 use Pharaonic\Fingerprint\Exceptions\UnreadableResourceException;
+use SensitiveParameter;
 
 /**
  * Hashing, HMAC, output encoding and constant-time verification
@@ -58,10 +59,9 @@ final class Digest
     }
 
     /**
-     * Never throws, so the secret cannot end up in an exception trace (PHP 8.1 has no
-     * #[SensitiveParameter]); hash() and the file and stream methods check the algorithm instead
+     * Never throws; hash() and the file and stream methods check the algorithm instead
      */
-    public function withSecret(string $secret): self
+    public function withSecret(#[SensitiveParameter] string $secret): self
     {
         $digest = clone $this;
         $digest->secret = $secret;

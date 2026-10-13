@@ -61,7 +61,7 @@ Fingerprint::for($data)->hmac($secret)->make();
 Fingerprint::for($data)->algorithm('sha512')->hmac($secret)->make();
 ```
 
-An empty secret throws a `ConfigurationException`. An algorithm that cannot do HMAC, such as `crc32b`, `fnv1a64` or `joaat`, throws a `ConfigurationException` when you hash, not when you call `hmac()`. That way the secret never shows up in an exception trace.
+An empty secret throws a `ConfigurationException`. An algorithm that cannot do HMAC, such as `crc32b`, `fnv1a64` or `joaat`, throws a `ConfigurationException` when you hash, not when you call `hmac()`.
 
 ### Verifying
 
@@ -79,7 +79,7 @@ $builder->verify($received); // true or false
 
 - `var_dump()` and `print_r()` of a builder show only the algorithm, encoding, whether HMAC is on, and the namespace (or the signature fields).
 - `serialize()` of a builder throws a `LogicException`, so a builder never ends up in a cache or a queue with its secret.
-- No exception message or trace from the package contains the secret, and `result()` never holds it.
+- No exception message or trace from the package contains the secret, and `result()` never holds it. `hmac()` marks the secret with `#[\SensitiveParameter]`, so even a trace with arguments shows a `SensitiveParameterValue` instead of it.
 - PHP itself can still read private properties through `var_export()`, `(array)` casts and Reflection, so don't pass builders to code that dumps them that way.
 
 ### What a Fingerprint Is Not

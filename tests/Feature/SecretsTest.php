@@ -79,3 +79,35 @@ it('keeps the secret out of exception traces, even with arguments recorded', fun
     expect($traces)->toHaveCount(6)
         ->and(implode("\n", $traces))->not->toContain($secret);
 });
+
+it('redacts the secret argument in exception traces', function (Closure $call) {
+    $ignoreArgs = ini_get('zend.exception_ignore_args');
+    ini_set('zend.exception_ignore_args', '0');
+
+    try {
+        $call(); // A non-string secret makes PHP throw from inside hmac(), with its arguments recorded.
+    } catch (TypeError $exception) {
+        $frame = $exception->getTrace()[0];
+    } finally {
+        ini_set('zend.exception_ignore_args', (string) $ignoreArgs);
+    }
+
+    expect($frame['function'] ?? null)->toBe('hmac')
+        ->and($frame['args'][0] ?? null)->toBeInstanceOf(SensitiveParameterValue::class);
+})->with([
+    'fingerprint' => [fn() => Fingerprint::for(1)->hmac(123456789)],
+    'signature' => [fn() => Fingerprint::signature([])->hmac(123456789)],
+    'file' => [fn() => Fingerprint::file(__FILE__)->hmac(123456789)],
+    'stream' => [fn() => Fingerprint::stream(STDIN)->hmac(123456789)],
+]);
+
+it('marks every parameter that receives the secret as sensitive', function (string $class, string $method) {
+    $attributes = (new ReflectionMethod($class, $method))->getParameters()[0]->getAttributes(SensitiveParameter::class);
+
+    expect($attributes)->toHaveCount(1);
+})->with([
+    [Pharaonic\Fingerprint\FingerprintBuilder::class, 'hmac'],
+    [Pharaonic\Fingerprint\SignatureBuilder::class, 'hmac'],
+    [Pharaonic\Fingerprint\DigestBuilder::class, 'hmac'],
+    [Pharaonic\Fingerprint\Support\Digest::class, 'withSecret'],
+]);
