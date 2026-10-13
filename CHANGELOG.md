@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented in this file.
 
+## 8.4.0 - Unreleased
+
+### Changed
+
+- Requires PHP 8.4. Every value that the earlier versions accept keeps its fingerprint: `trim()` still removes only ASCII whitespace, and `precision()` does not depend on the rounding changes of PHP 8.4.
+
 ## 8.3.0 - 2026-10-13
 
 ### Changed
