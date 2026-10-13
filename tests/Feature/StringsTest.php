@@ -69,7 +69,7 @@ it('needs a Normalizer implementation for unicode()', function () {
             }
         });
         try {
-            Pharaonic\Fingerprint\Fingerprint::for('x')->unicode('NFC');
+            (void) Pharaonic\Fingerprint\Fingerprint::for('x')->unicode('NFC');
         } catch (Throwable $exception) {
             echo get_class($exception), ': ', $exception->getMessage();
         }
