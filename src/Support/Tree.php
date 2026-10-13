@@ -53,11 +53,11 @@ final class Tree
         }
 
         if ($node instanceof Map) {
-            return array_map([self::class, 'toPhp'], $node->items);
+            return array_map(self::toPhp(...), $node->items);
         }
 
         if (is_array($node)) {
-            return array_map([self::class, 'toPhp'], $node);
+            return array_map(self::toPhp(...), $node);
         }
 
         return $node;

@@ -12,7 +12,7 @@ namespace Pharaonic\Fingerprint\Support;
 final class Date
 {
     public function __construct(
-        public string $time,
-        public ?string $zone = null,
+        public readonly string $time,
+        public readonly ?string $zone = null,
     ) {}
 }

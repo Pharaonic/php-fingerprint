@@ -16,5 +16,5 @@ final class Map
     /**
      * @param array<int|string, mixed> $items
      */
-    public function __construct(public array $items) {}
+    public function __construct(public readonly array $items) {}
 }

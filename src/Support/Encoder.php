@@ -78,7 +78,7 @@ final class Encoder
         }
 
         if (is_array($node)) {
-            return self::list(array_map([self::class, 'encode'], array_values($node)));
+            return self::list(array_map(self::encode(...), array_values($node)));
         }
 
         throw new LogicException(sprintf('A normalized tree cannot hold %s.', get_debug_type($node)));
@@ -143,7 +143,7 @@ final class Encoder
     public static function map(array $entries): string
     {
         // Binary comparison of the key tokens: never locale-aware, and int keys stay apart from string keys.
-        uksort($entries, 'strcmp');
+        uksort($entries, strcmp(...));
 
         $body = '';
 

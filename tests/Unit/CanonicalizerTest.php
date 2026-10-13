@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
+use Pharaonic\Fingerprint\Fingerprint;
 use Pharaonic\Fingerprint\Support\Canonicalizer;
 
-it('detects lists without array_is_list()', function (array $value, bool $isList) {
-    expect(Canonicalizer::isList($value))->toBe($isList);
+it('treats only arrays keyed 0 to n-1 in order as lists', function (array $value, bool $isList) {
+    expect(str_starts_with(Fingerprint::for($value)->result()->canonical(), 'fp1;nl'))->toBe($isList);
 })->with([
     'empty' => [[], true],
     'sequential' => [['a', 'b'], true],

@@ -244,7 +244,7 @@ final class Normalizer
             }
         }
 
-        return ! $isMap && Canonicalizer::isList($value) ? array_values($items) : new Map($items);
+        return ! $isMap && array_is_list($value) ? array_values($items) : new Map($items);
     }
 
     /**

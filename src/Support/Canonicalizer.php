@@ -43,22 +43,4 @@ final class Canonicalizer
     {
         return Encoder::document($this->namespace, Encoder::encode($tree));
     }
-
-    /**
-     * Keys are exactly 0..n-1 in order (array_is_list() only exists from PHP 8.1)
-     *
-     * @param array<mixed> $value
-     */
-    public static function isList(array $value): bool
-    {
-        $expected = 0;
-
-        foreach ($value as $key => $_) {
-            if ($key !== $expected++) {
-                return false;
-            }
-        }
-
-        return true;
-    }
 }

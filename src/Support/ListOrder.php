@@ -24,7 +24,7 @@ final class ListOrder
      * @param list<array{non-empty-list<string>, bool}> $fields Field paths, and whether each is descending.
      * @param (callable(mixed, mixed): mixed)|null $comparator
      */
-    private function __construct(private array $fields = [], ?callable $comparator = null)
+    private function __construct(private readonly array $fields = [], ?callable $comparator = null)
     {
         $this->comparator = $comparator;
     }
