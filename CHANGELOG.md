@@ -2,6 +2,16 @@
 
 All notable changes to this project are documented in this file.
 
+## 8.5.0 - Unreleased
+
+### Added
+
+- Every builder method, `make()`, `verify()`, `result()`, `message()` and the `Fingerprint` entry points have `#[\NoDiscard]`. PHP warns when their result is thrown away, which catches calls such as `$builder->ignore('x');` that never had an effect because builders never change. Cast a call made only for its exception to `(void)`.
+
+### Changed
+
+- Requires PHP 8.5. Every value that the earlier versions accept keeps its fingerprint.
+
 ## 8.4.0 - 2026-10-13
 
 ### Changed
