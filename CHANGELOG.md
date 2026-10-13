@@ -6,7 +6,8 @@ All notable changes to this project are documented in this file.
 
 ### Changed
 
-- The Installation and Guarantees & Limitations pages describe only the 8.0.x line, without notes about features of later PHP lines.
+- The docs describe only the 8.0.x line: the Installation and Guarantees & Limitations pages no longer mention features or release lines of later PHP versions.
+- The Overview drops the Learning Path table, and the Quick Start links straight to Ordered Signatures and Signature Examples.
 
 ## 8.0.2 - 2026-10-12
 
