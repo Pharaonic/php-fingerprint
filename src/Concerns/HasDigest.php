@@ -7,6 +7,7 @@ namespace Pharaonic\Fingerprint\Concerns;
 use Pharaonic\Fingerprint\Exceptions\ConfigurationException;
 use Pharaonic\Fingerprint\Support\Digest;
 use SensitiveParameter;
+use NoDiscard;
 
 /**
  * Algorithm, HMAC and output encoding options shared by every builder
@@ -23,6 +24,7 @@ trait HasDigest
      * Non-cryptographic algorithms such as crc32b, fnv1a64 or md5 are fine for change detection
      * but must not protect anything.
      */
+    #[NoDiscard('the builder is immutable, so use the one it returns')]
     public function algorithm(string $algorithm): self
     {
         return clone($this, ['digest' => $this->digest->withAlgorithm($algorithm)]);
@@ -34,6 +36,7 @@ trait HasDigest
      * The secret never appears in var_dump(), print_r(), exception messages or exception traces,
      * and the builder cannot be serialized.
      */
+    #[NoDiscard('the builder is immutable, so use the one it returns')]
     public function hmac(#[SensitiveParameter] string $secret): self
     {
         if ($secret === '') {
@@ -47,6 +50,7 @@ trait HasDigest
     /**
      * Lowercase hexadecimal output (the default)
      */
+    #[NoDiscard('the builder is immutable, so use the one it returns')]
     public function hex(): self
     {
         return $this->encoding('hex');
@@ -55,6 +59,7 @@ trait HasDigest
     /**
      * Raw binary output
      */
+    #[NoDiscard('the builder is immutable, so use the one it returns')]
     public function binary(): self
     {
         return $this->encoding('binary');
@@ -63,6 +68,7 @@ trait HasDigest
     /**
      * Standard base64 output, with padding
      */
+    #[NoDiscard('the builder is immutable, so use the one it returns')]
     public function base64(): self
     {
         return $this->encoding('base64');
@@ -71,6 +77,7 @@ trait HasDigest
     /**
      * URL-safe base64 output ("-" and "_"), without padding
      */
+    #[NoDiscard('the builder is immutable, so use the one it returns')]
     public function base64Url(): self
     {
         return $this->encoding('base64url');

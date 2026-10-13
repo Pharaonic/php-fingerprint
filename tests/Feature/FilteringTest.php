@@ -100,7 +100,7 @@ it('passes the value before value rules to ignoreWhen()', function () {
 });
 
 it('rejects an ignoreWhen() callback that does not return a boolean', function () {
-    Fingerprint::for(['a' => 1])->ignoreWhen(fn() => 1)->make();
+    (void) Fingerprint::for(['a' => 1])->ignoreWhen(fn() => 1)->make();
 })->throws(ConfigurationException::class, 'An ignoreWhen() callback must return a boolean, int returned at path "a".');
 
 it('ignores nulls, empty strings and empty arrays only when asked', function () {

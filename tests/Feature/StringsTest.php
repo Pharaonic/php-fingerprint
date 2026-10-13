@@ -48,7 +48,7 @@ it('only touches strings', function () {
 });
 
 it('rejects case changes on invalid UTF-8 instead of replacing bytes', function () {
-    Fingerprint::for(['s' => "\xff"])->lower()->make();
+    (void) Fingerprint::for(['s' => "\xff"])->lower()->make();
 })->throws(UnsupportedValueException::class, 'A string that is not valid UTF-8 cannot be case-folded or Unicode-normalized at path "s".');
 
 it('applies Unicode normalization forms', function () {
@@ -81,5 +81,5 @@ it('needs a Normalizer implementation for unicode()', function () {
 })->skip(extension_loaded('intl'), 'This PHP has ext-intl; CI runs this test on a job without it.');
 
 it('rejects unknown Unicode forms', function () {
-    Fingerprint::for('x')->unicode('nfc');
+    (void) Fingerprint::for('x')->unicode('nfc');
 })->throws(ConfigurationException::class, 'unicode() accepts NFC, NFD, NFKC or NFKD, "nfc" given.');

@@ -28,3 +28,4 @@ Require PHP 8.5 and update the package. Nothing else changes: no method was remo
 
 - From 8.0.x, you also get enum support ([Enums](#normalization)) and the `xxh*` and `murmur3*` algorithms ([Hashing & HMAC](#hashing)).
 - From 8.0.x or 8.1.x, the HMAC secret is also marked as a sensitive parameter, so PHP hides it in every stack trace ([Keeping Secrets Safe](#hashing)).
+- PHP now warns when you call a builder method or `make()`, `verify()`, `result()` or `message()` and throw the result away, such as `$builder->ignore('x');` on its own line. That call never had an effect, because builders never change. Use the returned builder, or cast a call you make only for its exception to `(void)`.

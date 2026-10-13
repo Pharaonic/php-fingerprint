@@ -1,6 +1,6 @@
 ## API Reference
 
-All classes live in the `Pharaonic\Fingerprint` namespace. Builders are immutable: every method that configures one returns a new builder.
+All classes live in the `Pharaonic\Fingerprint` namespace. Builders are immutable: every method that configures one returns a new builder. Every builder method and every method of `Fingerprint` has `#[\NoDiscard]`, so PHP warns when its result is thrown away.
 
 ### Fingerprint
 

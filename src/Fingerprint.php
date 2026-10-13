@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Pharaonic\Fingerprint;
 
 use Pharaonic\Fingerprint\Support\Digest;
+use NoDiscard;
 
 /**
  * Deterministic fingerprints of PHP values
@@ -20,6 +21,7 @@ final class Fingerprint
     /**
      * The SHA-256 fingerprint of a value, as lowercase hex
      */
+    #[NoDiscard]
     public static function make(mixed $value): string
     {
         return self::for($value)->make();
@@ -28,6 +30,7 @@ final class Fingerprint
     /**
      * Whether a value matches an expected SHA-256 hex fingerprint, compared in constant time
      */
+    #[NoDiscard]
     public static function verify(mixed $value, string $expected): bool
     {
         return self::for($value)->verify($expected);
@@ -36,6 +39,7 @@ final class Fingerprint
     /**
      * Start configuring the fingerprint of a value
      */
+    #[NoDiscard]
     public static function for(mixed $value): FingerprintBuilder
     {
         return new FingerprintBuilder($value);
@@ -44,6 +48,7 @@ final class Fingerprint
     /**
      * Start a fingerprint of a file's raw bytes, read in chunks
      */
+    #[NoDiscard]
     public static function file(string $path): DigestBuilder
     {
         return new DigestBuilder($path);
@@ -56,6 +61,7 @@ final class Fingerprint
      *
      * @param resource $stream
      */
+    #[NoDiscard]
     public static function stream($stream): DigestBuilder
     {
         Digest::assertReadableStream($stream);
@@ -70,6 +76,7 @@ final class Fingerprint
      *
      * @param array<mixed>|object $payload
      */
+    #[NoDiscard]
     public static function signature(array|object $payload): SignatureBuilder
     {
         return new SignatureBuilder($payload);

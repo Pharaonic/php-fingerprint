@@ -73,7 +73,7 @@ it('sorts with a comparator that receives plain PHP values', function () {
 });
 
 it('rejects a comparator that does not return an integer', function () {
-    Fingerprint::for(['l' => [2, 1]])->at('l')->sortUsing(fn($a, $b) => $a > $b)->make();
+    (void) Fingerprint::for(['l' => [2, 1]])->at('l')->sortUsing(fn($a, $b) => $a > $b)->make();
 })->throws(ConfigurationException::class, 'A sortUsing() comparator must return an integer, bool returned at path "l".');
 
 it('removes repeated elements strictly', function () {

@@ -49,7 +49,7 @@ it('scopes date rules to a path', function () {
 it('never changes the original date', function () {
     $date = new DateTime('2026-01-15 10:00:00', new DateTimeZone('Africa/Cairo'));
 
-    Fingerprint::for($date)->datePrecision('day')->make();
+    (void) Fingerprint::for($date)->datePrecision('day')->make();
 
     expect($date->format('Y-m-d H:i:s e'))->toBe('2026-01-15 10:00:00 Africa/Cairo');
 });
@@ -63,5 +63,5 @@ it('sorts lists of dates chronologically', function () {
 });
 
 it('rejects unknown date units', function () {
-    Fingerprint::for(null)->datePrecision('week');
+    (void) Fingerprint::for(null)->datePrecision('week');
 })->throws(ConfigurationException::class, 'datePrecision() accepts microsecond, second, minute, hour or day, "week" given.');

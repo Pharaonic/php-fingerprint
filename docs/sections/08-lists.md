@@ -36,10 +36,10 @@ Fingerprint::for([1, '1', 1, 2])->unique()->result()->normalized(); // [1, '1', 
 `unordered()` compares whole elements. For a list of records, such as order items, it's often clearer to order them by one field, several fields, or fields with a direction. Fields may be dot paths inside each element, without wildcards:
 
 ```php
-$builder->at('items')->sortBy('id');
-$builder->at('items')->sortBy(['category', 'id']);
-$builder->at('items')->sortBy(['category' => 'asc', 'priority' => 'desc']);
-$builder->at('items')->sortBy('meta.position');
+$byId = $builder->at('items')->sortBy('id');
+$byCategory = $builder->at('items')->sortBy(['category', 'id']);
+$byDirection = $builder->at('items')->sortBy(['category' => 'asc', 'priority' => 'desc']);
+$byPosition = $builder->at('items')->sortBy('meta.position');
 ```
 
 Two orders with the same items, listed in a different order, then match:

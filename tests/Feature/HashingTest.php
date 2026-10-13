@@ -64,5 +64,5 @@ it('rejects invalid hashing options', function (string $case) use ($invalid) {
 })->throws(ConfigurationException::class)->with(array_keys($invalid));
 
 it('names the algorithm and PHP version when an algorithm is missing', function () {
-    Fingerprint::for(1)->algorithm('nope');
+    (void) Fingerprint::for(1)->algorithm('nope');
 })->throws(ConfigurationException::class, 'The hash algorithm "nope" is not available on PHP ' . PHP_VERSION . '.');

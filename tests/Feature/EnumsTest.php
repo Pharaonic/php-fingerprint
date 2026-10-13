@@ -57,7 +57,7 @@ it('applies string rules to the name or value an enum case becomes', function ()
 });
 
 it('rejects enumsByValue() for a case without a backed value', function () {
-    Fingerprint::for(['card' => Suit::Hearts])->enumsByValue()->make();
+    (void) Fingerprint::for(['card' => Suit::Hearts])->enumsByValue()->make();
 })->throws(
     UnsupportedValueException::class,
     'The enum case Pharaonic\Fingerprint\Tests\Fixtures\Enums\Suit::Hearts has no backed value for enumsByValue() at path "card".',
@@ -93,7 +93,7 @@ it('sorts and de-duplicates by enum fields', function () {
 it('passes enum cases to transform() and ignoreWhen() callbacks', function () {
     $seen = [];
 
-    Fingerprint::for(['status' => Status::Paid])
+    (void) Fingerprint::for(['status' => Status::Paid])
         ->ignoreWhen(function (string $path, mixed $value) use (&$seen) {
             $seen[] = $value;
 
@@ -134,12 +134,12 @@ it('signs case names with enumsByName()', function () {
 });
 
 it('rejects a pure enum case in a signature', function () {
-    Fingerprint::signature(['suit' => Suit::Hearts])->fields(['suit'])->message();
+    (void) Fingerprint::signature(['suit' => Suit::Hearts])->fields(['suit'])->message();
 })->throws(
     UnsupportedValueException::class,
     'The field "suit" holds Pharaonic\Fingerprint\Tests\Fixtures\Enums\Suit; use enumsByName() or transform().',
 );
 
 it('rejects enumsByValue() for a pure enum case in a signature', function () {
-    Fingerprint::signature(['suit' => Suit::Hearts])->fields(['suit'])->enumsByValue()->message();
+    (void) Fingerprint::signature(['suit' => Suit::Hearts])->fields(['suit'])->enumsByValue()->message();
 })->throws(UnsupportedValueException::class, 'has no backed value for enumsByValue() at path "suit".');

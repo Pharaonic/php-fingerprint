@@ -61,7 +61,7 @@ it('verifies file fingerprints in constant time', function () {
 it('rejects missing files and directories when reading', function (string $path) {
     $builder = Fingerprint::file($path);
 
-    $builder->make();
+    (void) $builder->make();
 })->throws(UnreadableResourceException::class, 'does not exist or cannot be read')->with([
     'missing' => [__DIR__ . '/missing-file'],
     'directory' => [__DIR__],
@@ -69,7 +69,7 @@ it('rejects missing files and directories when reading', function (string $path)
 
 // Pest calls dataset closures first, so each test receives the value a closure builds.
 it('rejects values that are not readable streams', function (mixed $value) {
-    Fingerprint::stream($value);
+    (void) Fingerprint::stream($value);
 })->throws(UnreadableResourceException::class)->with([
     'not a resource' => ['php://memory'],
     'closed stream' => [function () {

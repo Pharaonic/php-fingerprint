@@ -20,18 +20,18 @@ it('tells floats that only differ in the last bit apart', function () {
 });
 
 it('rejects NAN', function () {
-    Fingerprint::make(['a' => [1, NAN]]);
+    (void) Fingerprint::make(['a' => [1, NAN]]);
 })->throws(UnsupportedValueException::class, 'NAN cannot be fingerprinted because it is not equal to itself at path "a.1".');
 
 it('rejects closures', function () {
-    Fingerprint::make(['fn' => fn() => 1]);
+    (void) Fingerprint::make(['fn' => fn() => 1]);
 })->throws(UnsupportedValueException::class, 'A closure cannot be fingerprinted at path "fn".');
 
 it('rejects resources', function () {
     $handle = fopen('php://memory', 'r');
 
     try {
-        Fingerprint::make([$handle]);
+        (void) Fingerprint::make([$handle]);
     } finally {
         fclose($handle);
     }
@@ -41,20 +41,20 @@ it('rejects closed resources', function () {
     $handle = fopen('php://memory', 'r');
     fclose($handle);
 
-    Fingerprint::make($handle);
+    (void) Fingerprint::make($handle);
 })->throws(UnsupportedValueException::class, 'A value of type resource (closed) cannot be fingerprinted at the root.');
 
 it('rejects objects without a supported conversion', function () {
-    Fingerprint::make(new DateTimeZone('UTC'));
+    (void) Fingerprint::make(new DateTimeZone('UTC'));
 })->throws(UnsupportedValueException::class, 'An object of class DateTimeZone cannot be fingerprinted at the root.');
 
 it('escapes dots, stars and backslashes in error paths', function () {
-    Fingerprint::make(['a.b' => ['*' => ['c\\d' => NAN]]]);
+    (void) Fingerprint::make(['a.b' => ['*' => ['c\\d' => NAN]]]);
 })->throws(UnsupportedValueException::class, 'at path "a\.b.\*.c\\\\d"');
 
 it('makes every exception catchable as a FingerprintException', function () {
     try {
-        Fingerprint::make(NAN);
+        (void) Fingerprint::make(NAN);
     } catch (Throwable $exception) {
     }
 
@@ -78,7 +78,7 @@ it('rejects nesting deeper than the maximum depth', function () {
         $value = [$value];
     }
 
-    Fingerprint::make($value);
+    (void) Fingerprint::make($value);
 })->throws(MaximumDepthExceededException::class, 'nested deeper than the maximum depth of 512');
 
 it('stops on self-referencing arrays instead of recursing forever', function () {

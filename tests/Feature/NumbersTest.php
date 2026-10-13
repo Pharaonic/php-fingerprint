@@ -24,7 +24,7 @@ it('folds a negative zero produced by rounding', function () {
 });
 
 it('rejects precision outside 0 to 53 digits', function (int $digits) {
-    Fingerprint::for(1.0)->precision($digits);
+    (void) Fingerprint::for(1.0)->precision($digits);
 })->throws(ConfigurationException::class)->with([-1, 54]);
 
 it('converts plain decimal strings into numbers', function (string $string, mixed $number) {

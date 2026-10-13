@@ -10,6 +10,7 @@ use Pharaonic\Fingerprint\Exceptions\MissingExtensionException;
 use Pharaonic\Fingerprint\Support\Path;
 use Pharaonic\Fingerprint\Support\Rules;
 use Pharaonic\Fingerprint\Support\Scalars;
+use NoDiscard;
 
 /**
  * Path scoping and the value rules shared by fingerprint and signature builders
@@ -29,6 +30,7 @@ trait HasValueRules
     /**
      * Apply the following value rules to the values at this path
      */
+    #[NoDiscard('the builder is immutable, so use the one it returns')]
     public function at(string $path): self
     {
         return clone($this, ['scope' => Path::parse($path)]);
@@ -41,6 +43,7 @@ trait HasValueRules
      *
      * @param callable(mixed $value, string $path): mixed $callback
      */
+    #[NoDiscard('the builder is immutable, so use the one it returns')]
     public function transform(callable $callback): self
     {
         return $this->rule('transform', $callback);
@@ -49,6 +52,7 @@ trait HasValueRules
     /**
      * Use the case name instead of the enum case: Status::Paid becomes "Paid"
      */
+    #[NoDiscard('the builder is immutable, so use the one it returns')]
     public function enumsByName(): self
     {
         return $this->rule('enums', 'name');
@@ -59,6 +63,7 @@ trait HasValueRules
      *
      * A case of an enum without backed values throws an UnsupportedValueException.
      */
+    #[NoDiscard('the builder is immutable, so use the one it returns')]
     public function enumsByValue(): self
     {
         return $this->rule('enums', 'value');
@@ -67,6 +72,7 @@ trait HasValueRules
     /**
      * Remove ASCII whitespace (space, tab, line feed, carriage return, vertical tab, form feed) from both ends of strings
      */
+    #[NoDiscard('the builder is immutable, so use the one it returns')]
     public function trim(): self
     {
         return $this->rule('trim', true);
@@ -75,6 +81,7 @@ trait HasValueRules
     /**
      * Turn every run of ASCII whitespace in strings into one space, with none at either end
      */
+    #[NoDiscard('the builder is immutable, so use the one it returns')]
     public function normalizeWhitespace(): self
     {
         return $this->rule('whitespace', true);
@@ -83,6 +90,7 @@ trait HasValueRules
     /**
      * Lowercase strings (UTF-8, through mbstring)
      */
+    #[NoDiscard('the builder is immutable, so use the one it returns')]
     public function lower(): self
     {
         return $this->rule('case', 'lower');
@@ -91,6 +99,7 @@ trait HasValueRules
     /**
      * Uppercase strings (UTF-8, through mbstring)
      */
+    #[NoDiscard('the builder is immutable, so use the one it returns')]
     public function upper(): self
     {
         return $this->rule('case', 'upper');
@@ -101,6 +110,7 @@ trait HasValueRules
      *
      * Needs ext-intl or symfony/polyfill-intl-normalizer.
      */
+    #[NoDiscard('the builder is immutable, so use the one it returns')]
     public function unicode(string $form): self
     {
         if (! in_array($form, Scalars::UNICODE_FORMS, true)) {
@@ -117,6 +127,7 @@ trait HasValueRules
     /**
      * Round floats to a number of decimals, from their exact binary value: 0.285 becomes 0.28
      */
+    #[NoDiscard('the builder is immutable, so use the one it returns')]
     public function precision(int $digits): self
     {
         if ($digits < 0 || $digits > 53) {

@@ -19,6 +19,7 @@ use Pharaonic\Fingerprint\Support\Path;
 use Pharaonic\Fingerprint\Support\Rules;
 use Pharaonic\Fingerprint\Support\Scalars;
 use UnitEnum;
+use NoDiscard;
 
 /**
  * Immutable ordered signature of selected payload fields, for protocols where field order matters
@@ -76,6 +77,7 @@ final class SignatureBuilder
      *
      * @param array<int|string, string> $fields
      */
+    #[NoDiscard('the builder is immutable, so use the one it returns')]
     public function fields(array $fields): self
     {
         return clone($this, ['fields' => self::parseFields($fields)]);
@@ -84,6 +86,7 @@ final class SignatureBuilder
     /**
      * Join the values only: value1 . separator . value2 (the default)
      */
+    #[NoDiscard('the builder is immutable, so use the one it returns')]
     public function valuesOnly(): self
     {
         return clone($this, ['keyValue' => false]);
@@ -92,6 +95,7 @@ final class SignatureBuilder
     /**
      * Join key-value pairs: key1 . keyValueSeparator . value1 . separator . key2 ...
      */
+    #[NoDiscard('the builder is immutable, so use the one it returns')]
     public function keyValue(): self
     {
         return clone($this, ['keyValue' => true]);
@@ -100,6 +104,7 @@ final class SignatureBuilder
     /**
      * The string placed between fields ("" by default)
      */
+    #[NoDiscard('the builder is immutable, so use the one it returns')]
     public function separator(string $separator): self
     {
         return clone($this, ['separator' => $separator]);
@@ -108,6 +113,7 @@ final class SignatureBuilder
     /**
      * The string placed between a key and its value in keyValue() output ("=" by default)
      */
+    #[NoDiscard('the builder is immutable, so use the one it returns')]
     public function keyValueSeparator(string $separator): self
     {
         return clone($this, ['keyValueSeparator' => $separator]);
@@ -120,6 +126,7 @@ final class SignatureBuilder
      *
      * @param string|Closure(string $field): ?string $strategy
      */
+    #[NoDiscard('the builder is immutable, so use the one it returns')]
     public function onMissing(string|Closure $strategy): self
     {
         return clone($this, ['onMissing' => self::strategy($strategy, 'onMissing')]);
@@ -130,6 +137,7 @@ final class SignatureBuilder
      *
      * @param string|Closure(string $field): ?string $strategy
      */
+    #[NoDiscard('the builder is immutable, so use the one it returns')]
     public function onNull(string|Closure $strategy): self
     {
         return clone($this, ['onNull' => self::strategy($strategy, 'onNull')]);
@@ -138,6 +146,7 @@ final class SignatureBuilder
     /**
      * The exact string that is hashed or signed
      */
+    #[NoDiscard]
     public function message(): string
     {
         if ($this->fields === []) {
@@ -169,6 +178,7 @@ final class SignatureBuilder
         return implode($this->separator, $parts);
     }
 
+    #[NoDiscard]
     public function make(): string
     {
         return $this->digest->hash($this->message());
@@ -179,6 +189,7 @@ final class SignatureBuilder
      *
      * Hex signatures are compared case-insensitively, other encodings exactly.
      */
+    #[NoDiscard]
     public function verify(string $expected): bool
     {
         return $this->digest->verify($this->message(), $expected);

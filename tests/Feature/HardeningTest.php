@@ -23,7 +23,7 @@ it('accepts nesting up to a custom maximum depth', function () {
 });
 
 it('rejects nesting deeper than a custom maximum depth', function () {
-    Fingerprint::for(nested(4))->maxDepth(3)->make();
+    (void) Fingerprint::for(nested(4))->maxDepth(3)->make();
 })->throws(MaximumDepthExceededException::class, 'nested deeper than the maximum depth of 3 at path "0.0.0"');
 
 it('counts objects towards the depth', function () {
@@ -39,7 +39,7 @@ it('allows deeper nesting than the default when asked', function () {
 });
 
 it('rejects a maximum depth below 1', function (int $depth) {
-    Fingerprint::for([])->maxDepth($depth);
+    (void) Fingerprint::for([])->maxDepth($depth);
 })->throws(ConfigurationException::class, 'maxDepth() must be at least 1')->with([0, -1]);
 
 it('makes every package exception a FingerprintException', function () {

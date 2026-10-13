@@ -17,6 +17,7 @@ use Pharaonic\Fingerprint\Support\Path;
 use Pharaonic\Fingerprint\Support\Rules;
 use Pharaonic\Fingerprint\Support\Scalars;
 use Pharaonic\Fingerprint\Support\Tree;
+use NoDiscard;
 
 /**
  * Immutable fingerprint configuration bound to one value
@@ -56,6 +57,7 @@ final class FingerprintBuilder
     /**
      * The same configuration bound to another value
      */
+    #[NoDiscard('the builder is immutable, so use the one it returns')]
     public function for(mixed $value): self
     {
         return clone($this, ['value' => $value]);
@@ -66,6 +68,7 @@ final class FingerprintBuilder
      *
      * @param string|array<string> $paths
      */
+    #[NoDiscard('the builder is immutable, so use the one it returns')]
     public function ignore(string|array $paths): self
     {
         $builder = clone $this;
@@ -84,6 +87,7 @@ final class FingerprintBuilder
      *
      * @param array<string> $paths
      */
+    #[NoDiscard('the builder is immutable, so use the one it returns')]
     public function only(array $paths): self
     {
         if ($paths === []) {
@@ -106,6 +110,7 @@ final class FingerprintBuilder
      *
      * @param callable(string $path, mixed $value): bool $callback
      */
+    #[NoDiscard('the builder is immutable, so use the one it returns')]
     public function ignoreWhen(callable $callback): self
     {
         $builder = clone $this;
@@ -117,6 +122,7 @@ final class FingerprintBuilder
     /**
      * Leave out values that end up null
      */
+    #[NoDiscard('the builder is immutable, so use the one it returns')]
     public function ignoreNulls(): self
     {
         $builder = clone $this;
@@ -128,6 +134,7 @@ final class FingerprintBuilder
     /**
      * Leave out values that end up as an empty string
      */
+    #[NoDiscard('the builder is immutable, so use the one it returns')]
     public function ignoreEmptyStrings(): self
     {
         $builder = clone $this;
@@ -139,6 +146,7 @@ final class FingerprintBuilder
     /**
      * Leave out arrays that end up empty, including those emptied by other filters
      */
+    #[NoDiscard('the builder is immutable, so use the one it returns')]
     public function ignoreEmptyArrays(): self
     {
         $builder = clone $this;
@@ -158,6 +166,7 @@ final class FingerprintBuilder
      * @param class-string $class
      * @param callable(object $value): mixed $normalizer
      */
+    #[NoDiscard('the builder is immutable, so use the one it returns')]
     public function normalize(string $class, callable $normalizer): self
     {
         if (! class_exists($class) && ! interface_exists($class)) {
@@ -177,6 +186,7 @@ final class FingerprintBuilder
      * optional exponent qualify; ' 1', '+1', '01', '.5' and '1.' stay strings. Integers that fit
      * become int, everything else float.
      */
+    #[NoDiscard('the builder is immutable, so use the one it returns')]
     public function normalizeNumericStrings(): self
     {
         return $this->rule('numericStrings', true);
@@ -185,6 +195,7 @@ final class FingerprintBuilder
     /**
      * Turn true, 1, '1' and 'true' into true, and false, 0, '0' and 'false' into false
      */
+    #[NoDiscard('the builder is immutable, so use the one it returns')]
     public function normalizeBooleans(): self
     {
         return $this->rule('booleans', true);
@@ -193,6 +204,7 @@ final class FingerprintBuilder
     /**
      * Truncate dates to a unit: microsecond (the default), second, minute, hour or day
      */
+    #[NoDiscard('the builder is immutable, so use the one it returns')]
     public function datePrecision(string $unit): self
     {
         if (! in_array($unit, Scalars::DATE_UNITS, true)) {
@@ -205,6 +217,7 @@ final class FingerprintBuilder
     /**
      * Fingerprint dates by their local time and timezone name instead of their UTC instant
      */
+    #[NoDiscard('the builder is immutable, so use the one it returns')]
     public function keepTimezone(): self
     {
         return $this->rule('keepTimezone', true);
@@ -216,6 +229,7 @@ final class FingerprintBuilder
      * Elements are ordered by their canonical bytes, so lists holding the same elements
      * (duplicates included) give the same fingerprint. Has no effect on maps and scalars.
      */
+    #[NoDiscard('the builder is immutable, so use the one it returns')]
     public function unordered(): self
     {
         return $this->rule('order', ListOrder::unordered());
@@ -230,6 +244,7 @@ final class FingerprintBuilder
      *
      * @param string|array<int|string, string> $fields
      */
+    #[NoDiscard('the builder is immutable, so use the one it returns')]
     public function sortBy(string|array $fields): self
     {
         return $this->rule('order', ListOrder::by(self::sortFields(is_string($fields) ? [$fields] : $fields)));
@@ -242,6 +257,7 @@ final class FingerprintBuilder
      *
      * @param callable(mixed $a, mixed $b): int $comparator
      */
+    #[NoDiscard('the builder is immutable, so use the one it returns')]
     public function sortUsing(callable $comparator): self
     {
         return $this->rule('order', ListOrder::using($comparator));
@@ -252,6 +268,7 @@ final class FingerprintBuilder
      *
      * Elements are compared strictly: 1 and '1' are different.
      */
+    #[NoDiscard('the builder is immutable, so use the one it returns')]
     public function unique(): self
     {
         return $this->rule('unique', new ListUnique());
@@ -260,6 +277,7 @@ final class FingerprintBuilder
     /**
      * Remove list elements that repeat a field's value, keeping the first occurrence after any ordering rule
      */
+    #[NoDiscard('the builder is immutable, so use the one it returns')]
     public function uniqueBy(string $field): self
     {
         return $this->rule('unique', new ListUnique(self::field($field, 'uniqueBy')));
@@ -271,6 +289,7 @@ final class FingerprintBuilder
      * Deeper values throw a MaximumDepthExceededException instead of exhausting the stack;
      * self-referencing arrays hit this limit too.
      */
+    #[NoDiscard('the builder is immutable, so use the one it returns')]
     public function maxDepth(int $depth): self
     {
         if ($depth < 1) {
@@ -286,6 +305,7 @@ final class FingerprintBuilder
      * "invoice" and "order" fingerprints of the same data never match, and neither matches a
      * fingerprint without a namespace. A namespace is not a secret: use hmac() for that.
      */
+    #[NoDiscard('the builder is immutable, so use the one it returns')]
     public function namespace(string $name): self
     {
         if ($name === '') {
@@ -295,6 +315,7 @@ final class FingerprintBuilder
         return clone($this, ['namespace' => $name]);
     }
 
+    #[NoDiscard]
     public function make(): string
     {
         return $this->digest->hash($this->canonical());
@@ -303,6 +324,7 @@ final class FingerprintBuilder
     /**
      * The fingerprint with its canonical bytes, normalized value and options, for debugging
      */
+    #[NoDiscard]
     public function result(): FingerprintResult
     {
         $canonicalizer = $this->canonicalizer();
@@ -326,6 +348,7 @@ final class FingerprintBuilder
      *
      * Hex fingerprints are compared case-insensitively, other encodings exactly.
      */
+    #[NoDiscard]
     public function verify(string $expected): bool
     {
         return $this->digest->verify($this->canonical(), $expected);

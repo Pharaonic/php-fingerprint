@@ -52,7 +52,7 @@ it('renames fields in key-value output', function () use ($payload) {
 });
 
 it('throws for a missing field by default', function () use ($payload) {
-    Fingerprint::signature($payload)->fields(['a', 'order.missing'])->message();
+    (void) Fingerprint::signature($payload)->fields(['a', 'order.missing'])->message();
 })->throws(MissingFieldException::class, 'The field "order.missing" is missing from the payload.');
 
 it('treats a path through a null or a scalar as missing', function () use ($payload) {
@@ -68,7 +68,7 @@ it('handles missing fields as configured', function (string $strategy, string $m
 ]);
 
 it('throws for a null field by default', function () use ($payload) {
-    Fingerprint::signature($payload)->fields(['order.note'])->message();
+    (void) Fingerprint::signature($payload)->fields(['order.note'])->message();
 })->throws(UnsupportedValueException::class, 'The field "order.note" is null; choose how to sign it with onNull().');
 
 it('handles null fields as configured, apart from missing ones', function () use ($payload) {
@@ -88,7 +88,7 @@ it('resolves missing and null fields with closures', function () use ($payload) 
 });
 
 it('rejects a strategy closure that returns something else than a string or null', function () use ($payload) {
-    Fingerprint::signature($payload)->fields(['zzz'])->onMissing(fn() => 1)->message();
+    (void) Fingerprint::signature($payload)->fields(['zzz'])->onMissing(fn() => 1)->message();
 })->throws(ConfigurationException::class, 'A field strategy must return a string or null, int returned for "zzz".');
 
 it('turns values into strings', function () {
@@ -99,18 +99,18 @@ it('turns values into strings', function () {
 });
 
 it('needs precision() for floats', function () {
-    Fingerprint::signature(['amount' => 10.5])->fields(['amount'])->message();
+    (void) Fingerprint::signature(['amount' => 10.5])->fields(['amount'])->message();
 })->throws(UnsupportedValueException::class, 'The field "amount" holds float; set precision() for it.');
 
 it('needs transform() for arrays, objects and dates', function (mixed $value) {
-    Fingerprint::signature(['v' => $value])->fields(['v'])->message();
+    (void) Fingerprint::signature(['v' => $value])->fields(['v'])->message();
 })->throws(UnsupportedValueException::class, 'convert it with transform()')->with([
     'array' => [[1]],
     'date' => [new DateTimeImmutable()],
 ]);
 
 it('rejects infinite floats even with precision()', function () {
-    Fingerprint::signature(['v' => INF])->fields(['v'])->precision(2)->message();
+    (void) Fingerprint::signature(['v' => INF])->fields(['v'])->precision(2)->message();
 })->throws(UnsupportedValueException::class);
 
 it('applies per-field rules without changing the order', function () {
@@ -193,7 +193,7 @@ it('never changes the builder a method is called on', function () use ($payload)
     $base = Fingerprint::signature($payload)->fields(['a', 'b']);
     $before = $base->make();
 
-    $base->fields(['b'])->keyValue()->separator('|')->keyValueSeparator(':')->onMissing('skip')->onNull('empty')
+    (void) $base->fields(['b'])->keyValue()->separator('|')->keyValueSeparator(':')->onMissing('skip')->onNull('empty')
         ->at('a')->upper()->algorithm('md5')->hmac('k')->base64();
 
     expect($base->make())->toBe($before);

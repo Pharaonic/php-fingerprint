@@ -74,6 +74,6 @@ foreach ($rows as $row) {
 ### Good to Know
 
 - `7` and `'7'` are different, and so are `[1, 2]` and `[2, 1]`. The next page explains why.
-- Builders never change: each method returns a new one, so you can keep a configured builder and reuse it with `->for($otherData)`.
+- Builders never change: each method returns a new one, so you can keep a configured builder and reuse it with `->for($otherData)`. PHP warns when the returned builder is thrown away, as in `$builder->ignore('x');` on its own line.
 
 **Next:** [How Matching Works](#canonical-rules) starts The Basics: when two values share a fingerprint, and how to see what gets hashed.

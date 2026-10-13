@@ -62,3 +62,54 @@ it('does not apply a scope to the builder it came from', function () {
     expect($base->transform(fn() => 0)->make())->toBe(Fingerprint::make(0))
         ->and($scoped->transform(fn() => 0)->make())->toBe(Fingerprint::make(['a' => 0, 'b' => 2]));
 });
+
+it('warns when the builder a method returns is thrown away', function (Closure $call, string $method) {
+    $warnings = [];
+    set_error_handler(function (int $level, string $message) use (&$warnings) {
+        $warnings[] = $message;
+
+        return true;
+    }, E_USER_WARNING);
+
+    try {
+        $call();
+    } finally {
+        restore_error_handler();
+    }
+
+    expect($warnings)->toBe([
+        "The return value of method {$method}() should either be used or intentionally ignored by casting it as (void), the builder is immutable, so use the one it returns",
+    ]);
+})->with([
+    'ignore()' => [function () {
+        Fingerprint::for(['a' => 1])->ignore('a');
+    }, 'Pharaonic\Fingerprint\FingerprintBuilder::ignore'],
+    'trim()' => [function () {
+        Fingerprint::for(' a ')->trim();
+    }, 'Pharaonic\Fingerprint\FingerprintBuilder::trim'],
+    'hmac()' => [function () {
+        Fingerprint::signature([])->hmac('key');
+    }, 'Pharaonic\Fingerprint\SignatureBuilder::hmac'],
+]);
+
+it('warns when a fingerprint or a verification result is thrown away', function () {
+    $warnings = [];
+    set_error_handler(function (int $level, string $message) use (&$warnings) {
+        $warnings[] = $message;
+
+        return true;
+    }, E_USER_WARNING);
+
+    try {
+        $builder = Fingerprint::for(['a' => 1]);
+        $builder->make();
+        $builder->verify('x');
+        Fingerprint::verify(1, 'x');
+        (void) $builder->make();
+    } finally {
+        restore_error_handler();
+    }
+
+    expect($warnings)->toHaveCount(3)
+        ->and($warnings[0])->toStartWith('The return value of method Pharaonic\Fingerprint\FingerprintBuilder::make() should either be used');
+});

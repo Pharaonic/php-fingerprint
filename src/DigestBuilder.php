@@ -7,6 +7,7 @@ namespace Pharaonic\Fingerprint;
 use LogicException;
 use Pharaonic\Fingerprint\Concerns\HasDigest;
 use Pharaonic\Fingerprint\Support\Digest;
+use NoDiscard;
 
 /**
  * Immutable fingerprint of raw bytes from a file or a stream
@@ -33,6 +34,7 @@ final class DigestBuilder
         $this->digest = new Digest();
     }
 
+    #[NoDiscard]
     public function make(): string
     {
         return is_string($this->source)
@@ -45,6 +47,7 @@ final class DigestBuilder
      *
      * Hex fingerprints are compared case-insensitively, other encodings exactly.
      */
+    #[NoDiscard]
     public function verify(string $expected): bool
     {
         return $this->digest->matches($this->make(), $expected);

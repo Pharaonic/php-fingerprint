@@ -15,7 +15,7 @@ it('transforms only the values at the scoped path', function () {
 it('applies rules declared before any at() to every value, the root included', function () {
     $paths = [];
 
-    Fingerprint::for(['a' => [1]])
+    (void) Fingerprint::for(['a' => [1]])
         ->transform(function (mixed $value, string $path) use (&$paths) {
             $paths[] = $path;
 
@@ -66,7 +66,7 @@ it('normalizes what a transform returns, including arrays', function () {
 it('passes the escaped path to a transform', function () {
     $seen = null;
 
-    Fingerprint::for(['a.b' => ['*' => 1]])
+    (void) Fingerprint::for(['a.b' => ['*' => 1]])
         ->at('a\.b.\*')->transform(function (mixed $value, string $path) use (&$seen) {
             $seen = $path;
 

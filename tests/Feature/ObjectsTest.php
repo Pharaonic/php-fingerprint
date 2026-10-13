@@ -50,7 +50,7 @@ it('rejects generators', function () {
         yield 1;
     })();
 
-    Fingerprint::make(['g' => $generator]);
+    (void) Fingerprint::make(['g' => $generator]);
 })->throws(UnsupportedValueException::class, 'A generator cannot be fingerprinted at path "g".');
 
 it('rejects iterators that repeat a key', function () {
@@ -83,7 +83,7 @@ it('rejects iterators that repeat a key', function () {
         }
     };
 
-    Fingerprint::make($iterator);
+    (void) Fingerprint::make($iterator);
 })->throws(UnsupportedValueException::class, 'yielding the key "same" twice cannot be fingerprinted at the root.');
 
 it('detects objects that contain themselves', function () {
@@ -91,14 +91,14 @@ it('detects objects that contain themselves', function () {
     $node->child = new stdClass();
     $node->child->parent = $node;
 
-    Fingerprint::make(['root' => $node]);
+    (void) Fingerprint::make(['root' => $node]);
 })->throws(CircularReferenceException::class, 'An object of class stdClass contains itself at path "root.child.parent".');
 
 it('detects a JsonSerializable that returns itself', function () {
     $self = jsonOf(null);
     $self->value = $self;
 
-    Fingerprint::make($self);
+    (void) Fingerprint::make($self);
 })->throws(CircularReferenceException::class);
 
 it('accepts the same object twice when it does not contain itself', function () {
@@ -150,17 +150,17 @@ it('applies normalize() everywhere whatever the scope', function () {
 });
 
 it('detects a normalize() callback that returns its own input', function () {
-    Fingerprint::for(new DateTimeZone('UTC'))->normalize(DateTimeZone::class, fn($zone) => $zone)->make();
+    (void) Fingerprint::for(new DateTimeZone('UTC'))->normalize(DateTimeZone::class, fn($zone) => $zone)->make();
 })->throws(CircularReferenceException::class);
 
 it('rejects normalize() for a class that does not exist', function () {
-    Fingerprint::for(null)->normalize('Missing\\Money', fn() => null);
+    (void) Fingerprint::for(null)->normalize('Missing\\Money', fn() => null);
 })->throws(ConfigurationException::class, 'normalize() needs an existing class or interface, "Missing\\Money" given.');
 
 it('gives callbacks a stdClass as its array of properties', function () {
     $seen = null;
 
-    Fingerprint::for(['o' => (object) ['a' => 1]])
+    (void) Fingerprint::for(['o' => (object) ['a' => 1]])
         ->ignoreWhen(function (string $path, mixed $value) use (&$seen) {
             if ($path === 'o') {
                 $seen = $value;
