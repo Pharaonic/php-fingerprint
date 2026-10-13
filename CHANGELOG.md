@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented in this file.
 
+## 8.3.0 - Unreleased
+
+### Changed
+
+- Requires PHP 8.3. Every value that the earlier versions accept keeps its fingerprint.
+
 ## 8.2.0 - 2026-10-13
 
 ### Changed
