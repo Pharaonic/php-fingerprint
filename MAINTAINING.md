@@ -8,7 +8,7 @@ Deterministic fingerprints of structured PHP data (canonical mode) and ordered p
 
 ## Supported PHP lines
 
-One branch per PHP minor, each requiring exactly that minor (`"php": ">=8.2 <8.3"`):
+One branch per PHP minor, each requiring exactly that minor (`"php": ">=8.3 <8.4"`):
 
 ```text
 8.0.x  8.1.x  8.2.x  8.3.x  8.4.x  8.5.x
@@ -31,7 +31,7 @@ One branch per PHP minor, each requiring exactly that minor (`"php": ">=8.2 <8.3
 
 ## Security notes
 
-- Every parameter that receives the HMAC secret (`hmac()`, `Digest::withSecret()`) has `#[SensitiveParameter]`, and `SecretsTest` checks it. The lines before 8.2 cannot use the attribute, so they never throw while a frame holds the secret: `hmac()` only rejects an empty secret, and the HMAC-algorithm check runs when hashing. This line keeps that order so the behavior stays the same on every line. `SecretsTest` checks the package's frames with `zend.exception_ignore_args` off.
+- Every parameter that receives the HMAC secret (`hmac()`, `Digest::withSecret()`) has `#[SensitiveParameter]`, and `SecretsTest` checks it. The lines before 8.2 cannot use the attribute, so they never throw while a frame holds the secret: `hmac()` only rejects an empty secret, and the HMAC-algorithm check runs when hashing. The lines from 8.2 keep that order so the behavior stays the same on every line. `SecretsTest` checks the package's frames with `zend.exception_ignore_args` off.
 - The secret is hidden from `var_dump()`/`print_r()` through `__debugInfo()` and builders refuse `serialize()`, but `var_export()`, `(array)` casts and Reflection can still read private properties; that cannot be prevented in PHP.
 - `Fingerprint::file()` reads any path PHP's stat functions accept, stream wrappers included: paths must come from trusted code. PHP 8.0 no longer unserializes Phar metadata on file access.
 - Callbacks (`transform()`, `normalize()`, `sortUsing()`, `ignoreWhen()`, signature strategies) and user objects (`JsonSerializable`, `Traversable`, `ArrayAccess`) run application code and are trusted.
