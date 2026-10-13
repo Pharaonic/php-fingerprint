@@ -14,12 +14,13 @@ use Pharaonic\Fingerprint\Exceptions\MaximumDepthExceededException;
 use Pharaonic\Fingerprint\Exceptions\UnsupportedValueException;
 use stdClass;
 use Traversable;
+use UnitEnum;
 
 /**
  * Turns a PHP value into a normalized tree, applying filters and value rules in one walk
  *
- * The tree holds null, booleans, integers, floats, strings, dates (Date), lists (plain arrays)
- * and maps (Map).
+ * The tree holds null, booleans, integers, floats, strings, dates (Date), enum cases, lists
+ * (plain arrays) and maps (Map).
  *
  * For every value, in this order: objects become plain data, ignoreWhen(), transform() (whose
  * result is converted again), string rules, number rules, boolean rules, date rules, its own
@@ -29,7 +30,7 @@ use Traversable;
  *
  * Objects, in this order: closures are rejected; normalize() callbacks (an exact class first,
  * then the first matching class or interface in declaration order); DateTimeInterface stays a
- * date; JsonSerializable; Traversable (except generators); stdClass, always a map. Anything else
+ * date; enum cases stay enum cases; JsonSerializable; Traversable (except generators); stdClass, always a map. Anything else
  * is rejected, and private or protected state is never read.
  *
  * @internal
@@ -130,6 +131,12 @@ final class Normalizer
                 break;
             }
 
+            $normalizer = $this->rules->normalizerFor($value);
+
+            if ($normalizer === null && $value instanceof UnitEnum) {
+                break; // Encoded as itself, unless a normalize() callback converts it.
+            }
+
             $id = spl_object_id($value);
 
             if (isset($this->active[$id])) {
@@ -142,8 +149,6 @@ final class Normalizer
 
             $this->active[$id] = $value;
             $entered[] = $id;
-
-            $normalizer = $this->rules->normalizerFor($value);
 
             if ($normalizer !== null) {
                 $value = $normalizer($value);
@@ -292,7 +297,7 @@ final class Normalizer
      */
     private function assertScalar(mixed $value, array $path): void
     {
-        if ($value === null || is_bool($value) || is_int($value) || is_string($value) || $value instanceof Date) {
+        if ($value === null || is_bool($value) || is_int($value) || is_string($value) || $value instanceof Date || $value instanceof UnitEnum) {
             return;
         }
 

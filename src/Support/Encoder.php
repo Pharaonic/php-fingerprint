@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Pharaonic\Fingerprint\Support;
 
+use BackedEnum;
 use LogicException;
+use UnitEnum;
 
 /**
  * Canonical format v1 tokens
@@ -23,6 +25,7 @@ use LogicException;
  * map      = "m" <count> "{" (key value)* "}"    keys sorted by their token bytes
  * instant  = "t" <Y-m-d\TH:i:s.u> "Z"             a date as a UTC instant
  * zoned    = "z" <length> ":" <Y-m-d\TH:i:s.u> " " <timezone name>   keepTimezone()
+ * enum     = "e" string string (int | string | null)   class, case name, backed value (null when pure)
  * ```
  *
  * Changing any byte produced here changes stored fingerprints: it needs a new format version.
@@ -67,6 +70,10 @@ final class Encoder
             return self::date($node);
         }
 
+        if ($node instanceof UnitEnum) {
+            return self::enum($node);
+        }
+
         if ($node instanceof Map) {
             $entries = [];
 
@@ -93,6 +100,17 @@ final class Encoder
         $local = $date->time . ' ' . $date->zone;
 
         return 'z' . strlen($local) . ':' . $local;
+    }
+
+    /**
+     * The class takes part, so cases of different enums never collide, even with equal backed values
+     */
+    public static function enum(UnitEnum $case): string
+    {
+        $value = $case instanceof BackedEnum ? $case->value : null;
+
+        return 'e' . self::string(get_class($case)) . self::string($case->name)
+            . ($value === null ? self::null() : (is_int($value) ? self::int($value) : self::string($value)));
     }
 
     public static function null(): string

@@ -2,10 +2,15 @@
 
 declare(strict_types=1);
 
+use Pharaonic\Fingerprint\Tests\Fixtures\Enums\Priority;
+use Pharaonic\Fingerprint\Tests\Fixtures\Enums\State;
+use Pharaonic\Fingerprint\Tests\Fixtures\Enums\Status;
+use Pharaonic\Fingerprint\Tests\Fixtures\Enums\Suit;
+
 /*
  * Golden vectors for canonical format v1.
  *
- * Every branch (8.0.x … 8.5.x) must reproduce these bytes exactly. The expected documents are
+ * Every branch (8.0.x … 8.5.x) must reproduce these bytes exactly; the enum entries start on 8.1.x. The expected documents are
  * written by hand from the format specification, never captured from the implementation.
  * Changing an existing entry is a canonical-format change; later branches may only add entries.
  *
@@ -191,4 +196,20 @@ return [
     // Namespaces
     ['namespace in the header', fn() => ['id' => 1], fn($b) => $b->namespace('invoice'), 'fp1;s7:invoicem1{s2:idi1;}'],
     ['namespace is length-framed', fn() => 'b', fn($b) => $b->namespace('a'), 'fp1;s1:as1:b'],
+
+    // Enums (from 8.1.x)
+    ['enum pure case', fn() => Suit::Hearts, null, 'fp1;nes47:Pharaonic\\Fingerprint\\Tests\\Fixtures\\Enums\\Suits6:Heartsn'],
+    ['enum string-backed case', fn() => Status::Paid, null, 'fp1;nes49:Pharaonic\\Fingerprint\\Tests\\Fixtures\\Enums\\Statuss4:Paids4:paid'],
+    ['enum int-backed case', fn() => Priority::High, null, 'fp1;nes51:Pharaonic\\Fingerprint\\Tests\\Fixtures\\Enums\\Prioritys4:Highi3;'],
+    ['enum of another class with the same backed value', fn() => State::Paid, null, 'fp1;nes48:Pharaonic\\Fingerprint\\Tests\\Fixtures\\Enums\\States4:Paids4:paid'],
+    ['enum in a map', fn() => ['status' => Status::Paid, 'id' => 1], null, 'fp1;nm2{s2:idi1;s6:statuses49:Pharaonic\\Fingerprint\\Tests\\Fixtures\\Enums\\Statuss4:Paids4:paid}'],
+    ['enumsByName', fn() => Status::Paid, fn($b) => $b->enumsByName(), 'fp1;ns4:Paid'],
+    ['enumsByValue with a string-backed case', fn() => Status::Paid, fn($b) => $b->enumsByValue(), 'fp1;ns4:paid'],
+    ['enumsByValue with an int-backed case', fn() => Priority::High, fn($b) => $b->enumsByValue(), 'fp1;ni3;'],
+    [
+        'unordered list of enum cases',
+        fn() => [Suit::Spades, Suit::Hearts],
+        fn($b) => $b->unordered(),
+        'fp1;nl2[es47:Pharaonic\\Fingerprint\\Tests\\Fixtures\\Enums\\Suits6:Heartsnes47:Pharaonic\\Fingerprint\\Tests\\Fixtures\\Enums\\Suits6:Spadesn]',
+    ],
 ];

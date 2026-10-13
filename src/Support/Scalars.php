@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace Pharaonic\Fingerprint\Support;
 
+use BackedEnum;
 use DateTimeImmutable;
 use DateTimeInterface;
 use DateTimeZone;
 use Normalizer as IntlNormalizer;
 use Pharaonic\Fingerprint\Exceptions\UnsupportedValueException;
+use UnitEnum;
 
 /**
- * Value rules for strings, numbers, booleans and dates
+ * Value rules for enum cases, strings, numbers, booleans and dates
  *
  * Every rule only touches values of its own type and is independent of ini settings, the locale
  * and the PHP version.
@@ -37,6 +39,11 @@ final class Scalars
             return $value; // Dates are always converted, even without rules.
         }
 
+        // First, so the other rules apply to the name or value an enum case becomes.
+        if ($value instanceof UnitEnum && is_string($rules['enums'] ?? null)) {
+            $value = self::enum($value, $rules['enums'], $path);
+        }
+
         if (is_string($value)) {
             $value = self::string($value, $rules, $path);
         }
@@ -60,6 +67,25 @@ final class Scalars
         }
 
         return $value;
+    }
+
+    /**
+     * @param list<int|string>|string $path
+     */
+    private static function enum(UnitEnum $case, string $mode, array|string $path): int|string
+    {
+        if ($mode === 'name') {
+            return $case->name;
+        }
+
+        if (! $case instanceof BackedEnum) {
+            throw UnsupportedValueException::at(
+                is_array($path) ? Path::format($path) : $path,
+                sprintf('The enum case %s::%s has no backed value for enumsByValue()', get_class($case), $case->name),
+            );
+        }
+
+        return $case->value;
     }
 
     /**

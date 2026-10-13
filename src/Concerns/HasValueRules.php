@@ -50,6 +50,24 @@ trait HasValueRules
     }
 
     /**
+     * Use the case name instead of the enum case: Status::Paid becomes "Paid"
+     */
+    public function enumsByName(): self
+    {
+        return $this->rule('enums', 'name');
+    }
+
+    /**
+     * Use the backed value instead of the enum case: Status::Paid becomes "paid"
+     *
+     * A case of an enum without backed values throws an UnsupportedValueException.
+     */
+    public function enumsByValue(): self
+    {
+        return $this->rule('enums', 'value');
+    }
+
+    /**
      * Remove ASCII whitespace (space, tab, line feed, carriage return, vertical tab, form feed) from both ends of strings
      */
     public function trim(): self

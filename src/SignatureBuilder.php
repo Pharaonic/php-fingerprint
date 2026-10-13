@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Pharaonic\Fingerprint;
 
 use ArrayAccess;
+use BackedEnum;
 use Closure;
 use JsonSerializable;
 use LogicException;
@@ -17,6 +18,7 @@ use Pharaonic\Fingerprint\Support\Digest;
 use Pharaonic\Fingerprint\Support\Path;
 use Pharaonic\Fingerprint\Support\Rules;
 use Pharaonic\Fingerprint\Support\Scalars;
+use UnitEnum;
 
 /**
  * Immutable ordered signature of selected payload fields, for protocols where field order matters
@@ -245,11 +247,15 @@ final class SignatureBuilder
             return $value ? 'true' : 'false';
         }
 
+        if ($value instanceof BackedEnum) {
+            return (string) $value->value;
+        }
+
         if (is_float($value) && is_int($rules['precision'] ?? null) && is_finite($value)) {
             return sprintf('%.' . $rules['precision'] . 'F', $value);
         }
 
-        $hint = is_float($value) ? 'set precision() for it' : 'convert it with transform()';
+        $hint = is_float($value) ? 'set precision() for it' : ($value instanceof UnitEnum ? 'use enumsByName() or transform()' : 'convert it with transform()');
 
         throw new UnsupportedValueException(sprintf('The field "%s" holds %s; %s.', $field, get_debug_type($value), $hint));
     }
