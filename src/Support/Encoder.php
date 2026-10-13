@@ -34,7 +34,7 @@ use UnitEnum;
  */
 final class Encoder
 {
-    public const VERSION = 'v1';
+    public const string VERSION = 'v1';
 
     public static function document(?string $namespace, string $value): string
     {

@@ -36,7 +36,7 @@ final class SignatureBuilder
     use HasDigest;
     use HasValueRules;
 
-    private const STRATEGIES = ['throw', 'empty', 'null', 'skip'];
+    private const array STRATEGIES = ['throw', 'empty', 'null', 'skip'];
 
     /** @var list<array{string, non-empty-list<string>}> Output key and path of each field, in order */
     private array $fields = [];

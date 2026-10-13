@@ -11,7 +11,7 @@ namespace Pharaonic\Fingerprint\Support;
  */
 final class Canonicalizer
 {
-    public const DEFAULT_MAX_DEPTH = 512;
+    public const int DEFAULT_MAX_DEPTH = 512;
 
     private Rules $rules;
 

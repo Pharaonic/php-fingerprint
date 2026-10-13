@@ -19,7 +19,7 @@ use SensitiveParameter;
  */
 final class Digest
 {
-    public const ENCODINGS = ['hex', 'binary', 'base64', 'base64url'];
+    public const array ENCODINGS = ['hex', 'binary', 'base64', 'base64url'];
 
     private string $algorithm = 'sha256';
 

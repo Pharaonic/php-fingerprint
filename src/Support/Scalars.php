@@ -23,11 +23,11 @@ use UnitEnum;
 final class Scalars
 {
     /** The ASCII whitespace used by trim() and normalizeWhitespace() */
-    public const WHITESPACE = " \t\n\r\x0B\x0C";
+    public const string WHITESPACE = " \t\n\r\x0B\x0C";
 
-    public const UNICODE_FORMS = ['NFC', 'NFD', 'NFKC', 'NFKD'];
+    public const array UNICODE_FORMS = ['NFC', 'NFD', 'NFKC', 'NFKD'];
 
-    public const DATE_UNITS = ['microsecond', 'second', 'minute', 'hour', 'day'];
+    public const array DATE_UNITS = ['microsecond', 'second', 'minute', 'hour', 'day'];
 
     /**
      * @param array<string, mixed> $rules
