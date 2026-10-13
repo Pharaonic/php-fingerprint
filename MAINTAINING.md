@@ -14,8 +14,6 @@ One branch per PHP minor, each requiring exactly that minor (`"php": ">=8.0 <8.1
 8.0.x  8.1.x  8.2.x  8.3.x  8.4.x  8.5.x
 ```
 
-Enum support starts on `8.1.x`. `8.0.x` has none in any form.
-
 ## Public API invariants
 
 - Canonical mode and signature mode are separate pipelines and must stay separate.

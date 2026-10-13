@@ -28,7 +28,6 @@ Each release line requires exactly one PHP version and keeps canonical format v1
 
 ### Limitations
 
-- **Enums:** the 8.0.x line has no enum support, because PHP 8.0 has no enums.
 - **Hash algorithms:** only the algorithms of your PHP build are available. PHP 8.0 has no `xxh*` or `murmur3*`.
 - **Unicode tables:** `lower()`, `upper()` and `unicode()` use the Unicode tables of mbstring and ICU. Characters added in recent Unicode versions can be handled differently by older PHP or ICU builds, so avoid relying on them when fingerprints must match across servers.
 - **Named timezones:** dates built from named zones depend on each PHP build's timezone database. See [Dates](#normalization).
