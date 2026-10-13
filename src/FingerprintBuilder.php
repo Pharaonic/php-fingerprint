@@ -58,10 +58,7 @@ final class FingerprintBuilder
      */
     public function for(mixed $value): self
     {
-        $builder = clone $this;
-        $builder->value = $value;
-
-        return $builder;
+        return clone($this, ['value' => $value]);
     }
 
     /**
@@ -280,10 +277,7 @@ final class FingerprintBuilder
             throw new ConfigurationException(sprintf('maxDepth() must be at least 1, %d given.', $depth));
         }
 
-        $builder = clone $this;
-        $builder->maxDepth = $depth;
-
-        return $builder;
+        return clone($this, ['maxDepth' => $depth]);
     }
 
     /**
@@ -298,10 +292,7 @@ final class FingerprintBuilder
             throw new ConfigurationException('A namespace cannot be empty.');
         }
 
-        $builder = clone $this;
-        $builder->namespace = $name;
-
-        return $builder;
+        return clone($this, ['namespace' => $name]);
     }
 
     public function make(): string

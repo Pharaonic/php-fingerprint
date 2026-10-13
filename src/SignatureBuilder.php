@@ -78,10 +78,7 @@ final class SignatureBuilder
      */
     public function fields(array $fields): self
     {
-        $builder = clone $this;
-        $builder->fields = self::parseFields($fields);
-
-        return $builder;
+        return clone($this, ['fields' => self::parseFields($fields)]);
     }
 
     /**
@@ -89,10 +86,7 @@ final class SignatureBuilder
      */
     public function valuesOnly(): self
     {
-        $builder = clone $this;
-        $builder->keyValue = false;
-
-        return $builder;
+        return clone($this, ['keyValue' => false]);
     }
 
     /**
@@ -100,10 +94,7 @@ final class SignatureBuilder
      */
     public function keyValue(): self
     {
-        $builder = clone $this;
-        $builder->keyValue = true;
-
-        return $builder;
+        return clone($this, ['keyValue' => true]);
     }
 
     /**
@@ -111,10 +102,7 @@ final class SignatureBuilder
      */
     public function separator(string $separator): self
     {
-        $builder = clone $this;
-        $builder->separator = $separator;
-
-        return $builder;
+        return clone($this, ['separator' => $separator]);
     }
 
     /**
@@ -122,10 +110,7 @@ final class SignatureBuilder
      */
     public function keyValueSeparator(string $separator): self
     {
-        $builder = clone $this;
-        $builder->keyValueSeparator = $separator;
-
-        return $builder;
+        return clone($this, ['keyValueSeparator' => $separator]);
     }
 
     /**
@@ -137,10 +122,7 @@ final class SignatureBuilder
      */
     public function onMissing(string|Closure $strategy): self
     {
-        $builder = clone $this;
-        $builder->onMissing = self::strategy($strategy, 'onMissing');
-
-        return $builder;
+        return clone($this, ['onMissing' => self::strategy($strategy, 'onMissing')]);
     }
 
     /**
@@ -150,10 +132,7 @@ final class SignatureBuilder
      */
     public function onNull(string|Closure $strategy): self
     {
-        $builder = clone $this;
-        $builder->onNull = self::strategy($strategy, 'onNull');
-
-        return $builder;
+        return clone($this, ['onNull' => self::strategy($strategy, 'onNull')]);
     }
 
     /**

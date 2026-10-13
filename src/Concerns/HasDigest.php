@@ -25,10 +25,7 @@ trait HasDigest
      */
     public function algorithm(string $algorithm): self
     {
-        $builder = clone $this;
-        $builder->digest = $this->digest->withAlgorithm($algorithm);
-
-        return $builder;
+        return clone($this, ['digest' => $this->digest->withAlgorithm($algorithm)]);
     }
 
     /**
@@ -44,10 +41,7 @@ trait HasDigest
         }
 
         // An algorithm that cannot do HMAC is reported when hashing, not here.
-        $builder = clone $this;
-        $builder->digest = $this->digest->withSecret($secret);
-
-        return $builder;
+        return clone($this, ['digest' => $this->digest->withSecret($secret)]);
     }
 
     /**
@@ -84,9 +78,6 @@ trait HasDigest
 
     private function encoding(string $encoding): self
     {
-        $builder = clone $this;
-        $builder->digest = $this->digest->withEncoding($encoding);
-
-        return $builder;
+        return clone($this, ['digest' => $this->digest->withEncoding($encoding)]);
     }
 }

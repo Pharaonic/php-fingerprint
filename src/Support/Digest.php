@@ -52,10 +52,7 @@ final class Digest
             self::assertHmacAlgorithm($algorithm);
         }
 
-        $digest = clone $this;
-        $digest->algorithm = $algorithm;
-
-        return $digest;
+        return clone($this, ['algorithm' => $algorithm]);
     }
 
     /**
@@ -63,6 +60,7 @@ final class Digest
      */
     public function withSecret(#[SensitiveParameter] string $secret): self
     {
+        // Not clone($this, [...]): the secret would be an unredacted argument of clone() in a trace.
         $digest = clone $this;
         $digest->secret = $secret;
 
@@ -75,10 +73,7 @@ final class Digest
             throw new ConfigurationException(sprintf('Unknown encoding "%s".', $encoding));
         }
 
-        $digest = clone $this;
-        $digest->encoding = $encoding;
-
-        return $digest;
+        return clone($this, ['encoding' => $encoding]);
     }
 
     /**

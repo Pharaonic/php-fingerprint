@@ -31,10 +31,7 @@ trait HasValueRules
      */
     public function at(string $path): self
     {
-        $builder = clone $this;
-        $builder->scope = Path::parse($path);
-
-        return $builder;
+        return clone($this, ['scope' => Path::parse($path)]);
     }
 
     /**
